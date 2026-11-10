@@ -49,6 +49,7 @@ interface AppContextType {
   users: UserProfile[];
   isAuthenticated: boolean;
   loginUser: (userId: string, pin: string) => { success: boolean; message?: string };
+  loginByPin: (pinOrCode: string) => { success: boolean; message?: string; user?: UserProfile };
   logoutUser: () => void;
   switchUser: (userId: string) => void;
   isAdmin: boolean;
@@ -104,6 +105,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     sessionStorage.setItem('trio_auth_user_id', target.id);
     storage.saveActiveUser(target);
     return { success: true };
+  };
+
+  const loginByPin = (
+    pinOrCode: string
+  ): { success: boolean; message?: string; user?: UserProfile } => {
+    const clean = pinOrCode.trim();
+    if (!clean) {
+      return { success: false, message: 'يرجى كتابة رمز الدخول (PIN).' };
+    }
+
+    // Match against any user's pinCode or phone
+    const target = users.find(
+      (u) => u.pinCode.trim() === clean || (u.phone && u.phone.trim() === clean)
+    );
+
+    if (!target) {
+      return {
+        success: false,
+        message: 'رمز الدخول غير مطابق لأي حساب مسجل! يرجى التأكد من كتابة الرمز الصحيح.',
+      };
+    }
+
+    setCurrentUser(target);
+    sessionStorage.setItem('trio_auth_user_id', target.id);
+    storage.saveActiveUser(target);
+    return { success: true, user: target };
   };
 
   const logoutUser = () => {
@@ -566,6 +593,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         users,
         isAuthenticated: !!currentUser,
         loginUser,
+        loginByPin,
         logoutUser,
         switchUser,
         isAdmin: !!currentUser && currentUser.role === 'admin',

@@ -1,370 +1,193 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Car,
+  KeyRound,
   Shield,
   User,
-  KeyRound,
-  Lock,
   AlertCircle,
   Eye,
   EyeOff,
-  Delete,
-  Check,
+  ArrowLeft,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const LoginPage: React.FC = () => {
-  const { users, loginUser, settings } = useApp();
+  const { users, loginByPin, settings } = useApp();
 
-  const [loginMode, setLoginMode] = useState<'owner' | 'cashier'>('owner');
-
-  const ownerUsers = users.filter((u) => u.role === 'admin');
-  const workerUsers = users.filter((u) => u.role === 'cashier');
-
-  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(ownerUsers[0]?.id || '');
-  const [selectedWorkerId, setSelectedWorkerId] = useState<string>(workerUsers[0]?.id || '');
-
-  // PIN state (written via keyboard or clicked on numpad)
-  const [pin, setPin] = useState('');
-  const [showPin, setShowPin] = useState(false);
+  const [enteredCode, setEnteredCode] = useState('');
+  const [showCode, setShowCode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const pinInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Active user ID based on tab
-  const activeTargetId = loginMode === 'owner' ? selectedOwnerId : selectedWorkerId;
-
-  // Auto-focus input when mode changes
   useEffect(() => {
-    setPin('');
-    setErrorMessage('');
-    if (pinInputRef.current) {
-      pinInputRef.current.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
-  }, [loginMode]);
+  }, []);
 
-  // Handle PIN submission
-  const handleLoginSubmit = (pinToSubmit?: string) => {
-    const finalPin = pinToSubmit !== undefined ? pinToSubmit : pin;
-    if (!finalPin.trim()) {
-      setErrorMessage('يرجى كتابة رمز الـ PIN المكون من 4 أرقام.');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!enteredCode.trim()) {
+      setErrorMessage('يرجى كتابة رمز الدخول (PIN / الكود).');
+      if (inputRef.current) inputRef.current.focus();
       return;
     }
 
     setErrorMessage('');
-    const res = loginUser(activeTargetId, finalPin);
+    const res = loginByPin(enteredCode);
     if (!res.success) {
-      setErrorMessage(res.message || 'رمز الـ PIN غير صحيح! يرجى إعادة المحاولة.');
-      setPin('');
-      if (pinInputRef.current) pinInputRef.current.focus();
+      setErrorMessage(res.message || 'رمز الدخول غير مطابق لأي حساب مسجل.');
+      setEnteredCode('');
+      if (inputRef.current) inputRef.current.focus();
     }
   };
 
-  // Keyboard typing handler
-  const handlePinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-    setPin(val);
+  const handleQuickFill = (code: string) => {
+    setEnteredCode(code);
     setErrorMessage('');
-
-    // If 4 digits typed, try auto-login
-    if (val.length === 4) {
-      setTimeout(() => {
-        handleLoginSubmit(val);
-      }, 100);
-    }
+    loginByPin(code);
   };
 
-  // On-screen Numpad handler
-  const handleNumpadPress = (digit: string) => {
-    if (pin.length < 6) {
-      const nextPin = pin + digit;
-      setPin(nextPin);
-      setErrorMessage('');
-
-      if (nextPin.length === 4) {
-        setTimeout(() => {
-          handleLoginSubmit(nextPin);
-        }, 100);
-      }
-    }
-  };
-
-  const handleNumpadBackspace = () => {
-    setPin((prev) => prev.slice(0, -1));
-    setErrorMessage('');
-    if (pinInputRef.current) pinInputRef.current.focus();
-  };
-
-  const handleNumpadClear = () => {
-    setPin('');
-    setErrorMessage('');
-    if (pinInputRef.current) pinInputRef.current.focus();
-  };
-
-  // Quick Demo Auto-fill helpers
-  const handleQuickDemoOwner = () => {
-    if (ownerUsers[0]) {
-      setSelectedOwnerId(ownerUsers[0].id);
-      setPin(ownerUsers[0].pinCode);
-      loginUser(ownerUsers[0].id, ownerUsers[0].pinCode);
-    }
-  };
-
-  const handleQuickDemoWorker = () => {
-    if (workerUsers[0]) {
-      setSelectedWorkerId(workerUsers[0].id);
-      setPin(workerUsers[0].pinCode);
-      loginUser(workerUsers[0].id, workerUsers[0].pinCode);
-    }
-  };
+  const ownerUser = users.find((u) => u.role === 'admin');
+  const workerUser = users.find((u) => u.role === 'cashier');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 flex flex-col justify-center items-center p-4 sm:p-6 text-slate-100 font-sans antialiased relative overflow-hidden">
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       {/* Main Container */}
       <div className="relative z-10 w-full max-w-md">
         {/* Brand Header */}
-        <div className="text-center mb-5 space-y-1.5">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-sky-500 to-cyan-400 text-white shadow-xl shadow-sky-500/25 mb-1">
-            <Car className="w-8 h-8" />
+        <div className="text-center mb-6 space-y-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-cyan-400 text-white shadow-xl shadow-sky-500/25 mb-1 ring-4 ring-white/10">
+            <Car className="w-9 h-9" />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             {settings.shopName}
           </h1>
-          <p className="text-xs text-slate-400">
-            تسجيل الدخول برمز الـ PIN السريع • مغسلة وتغيير زيوت
+          <p className="text-xs sm:text-sm text-slate-400 font-medium">
+            نظام إدارة المغسلة وتغيير الزيوت والمخزن
           </p>
         </div>
 
-        {/* Mode Selector Tabs (Owner vs Cashier) */}
-        <div className="bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-800 shadow-xl mb-4 grid grid-cols-2 gap-2 text-xs font-bold">
-          <button
-            type="button"
-            onClick={() => setLoginMode('owner')}
-            className={`py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              loginMode === 'owner'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            <Shield className="w-4 h-4" />
-            <span>دخول المالك (PIN) 👑</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setLoginMode('cashier')}
-            className={`py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              loginMode === 'cashier'
-                ? 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-            }`}
-          >
-            <User className="w-4 h-4" />
-            <span>دخول الكاشير (PIN) 👷</span>
-          </button>
-        </div>
-
-        {/* Main Login Card */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-slate-800 p-6 sm:p-7">
+        {/* Main Card */}
+        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-slate-800 p-6 sm:p-8">
           {/* Header Title */}
-          <div className="text-right mb-4">
-            <span
-              className={`text-[11px] font-bold uppercase tracking-wider block mb-0.5 ${
-                loginMode === 'owner' ? 'text-purple-700' : 'text-sky-700'
-              }`}
-            >
-              {loginMode === 'owner' ? 'صلاحيات المالك الكاملة والأرباح' : 'صلاحيات الكاشير والورديات'}
-            </span>
-            <h2 className="text-lg font-black text-slate-900">
-              {loginMode === 'owner' ? 'دخول صاحب المغسلة (المالك)' : 'دخول الكاشير / فني الوردية'}
+          <div className="text-right mb-6 border-b border-slate-100 pb-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-black mb-2">
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>تسجيل الدخول المباشر برمز الـ PIN</span>
+            </div>
+            <h2 className="text-xl font-black text-slate-900">
+              أهلاً بك، يرجى كتابة رمز الدخول
             </h2>
-            <p className="text-slate-500 text-[11px] mt-0.5">
-              اكتب رمز الـ PIN الخاص بك من لوحة المفاتيح أو استخدم الأرقام بالأسفل:
+            <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+              اكتب رمز الـ PIN أو الكود الخاص بك (مثال: <span className="font-mono font-bold text-slate-700">857487487</span> أو <span className="font-mono font-bold text-slate-700">1234</span>)، وسيقوم النظام بالتحقق منه ومطابقته بحسابك فوراً.
             </p>
           </div>
 
           {/* Error Message Alert */}
           {errorMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 text-right">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2.5 text-right">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleLoginSubmit();
-            }}
-            autoComplete="off"
-            className="space-y-4 text-xs"
-          >
-            {/* User Select Box */}
+          {/* Written PIN Form */}
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">
-                {loginMode === 'owner' ? 'اختر حساب المالك:' : 'اختر العامل / الكاشير:'}
-              </label>
-              <select
-                value={loginMode === 'owner' ? selectedOwnerId : selectedWorkerId}
-                onChange={(e) => {
-                  if (loginMode === 'owner') setSelectedOwnerId(e.target.value);
-                  else setSelectedWorkerId(e.target.value);
-                  setPin('');
-                  setErrorMessage('');
-                }}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-slate-800 font-bold focus:ring-2 focus:ring-sky-500 focus:outline-none"
-              >
-                {(loginMode === 'owner' ? ownerUsers : workerUsers).map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name} ({u.jobTitle || (u.role === 'admin' ? 'المالك' : 'فني')})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Written PIN Input Field */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="font-bold text-slate-700">
-                  اكتب رمز الـ PIN هنا <span className="text-rose-500">*</span>:
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-black text-slate-800 text-xs flex items-center gap-1.5">
+                  <KeyRound className="w-4 h-4 text-sky-600" />
+                  <span>رمز الدخول المكتوب (PIN):</span>
                 </label>
                 <button
                   type="button"
-                  onClick={() => setShowPin(!showPin)}
-                  className="text-slate-500 hover:text-slate-700 flex items-center gap-1 text-[11px] cursor-pointer"
+                  onClick={() => setShowCode(!showCode)}
+                  className="text-slate-500 hover:text-slate-800 flex items-center gap-1 text-[11px] font-bold cursor-pointer transition-colors"
                 >
-                  {showPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  <span>{showPin ? 'إخفاء الأرقام' : 'إظهار الـ PIN'}</span>
+                  {showCode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{showCode ? 'إخفاء الرمز' : 'إظهار الرمز'}</span>
                 </button>
               </div>
 
               <div className="relative">
                 <input
-                  ref={pinInputRef}
-                  type={showPin ? 'text' : 'password'}
-                  name="user_pin_code"
+                  ref={inputRef}
+                  type={showCode ? 'text' : 'password'}
+                  name="auth_user_pin"
                   autoComplete="off"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={6}
                   autoFocus
                   required
-                  placeholder="••••"
-                  value={pin}
-                  onChange={handlePinInputChange}
-                  className="w-full bg-slate-50 border-2 border-slate-300 rounded-2xl py-3 px-4 text-center font-mono font-black text-2xl tracking-[0.5em] text-slate-900 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 focus:outline-none transition-all"
+                  placeholder="اكتب رمزك هنا (مثال: 857487487)"
+                  value={enteredCode}
+                  onChange={(e) => {
+                    setEnteredCode(e.target.value);
+                    setErrorMessage('');
+                  }}
+                  className="w-full bg-slate-50 border-2 border-slate-300 rounded-2xl py-3.5 px-4 text-center font-mono font-black text-xl text-slate-900 tracking-wider focus:border-sky-500 focus:ring-4 focus:ring-sky-500/15 focus:outline-none transition-all placeholder:text-slate-400 placeholder:text-sm placeholder:font-normal placeholder:tracking-normal"
                 />
               </div>
             </div>
 
-            {/* Visual PIN Dots Indicator */}
-            <div className="flex items-center justify-center gap-3 py-0.5">
-              {[0, 1, 2, 3].map((idx) => (
-                <div
-                  key={idx}
-                  className={`w-3.5 h-3.5 rounded-full border-2 transition-all ${
-                    pin.length > idx
-                      ? loginMode === 'owner'
-                        ? 'bg-purple-600 border-purple-700 scale-110 shadow-sm'
-                        : 'bg-sky-500 border-sky-600 scale-110 shadow-sm'
-                      : 'bg-white border-slate-300'
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* On-screen Touch Numpad */}
-            <div className="grid grid-cols-3 gap-2 pt-1 font-mono">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
-                <button
-                  key={digit}
-                  type="button"
-                  onClick={() => handleNumpadPress(digit)}
-                  className="py-3 bg-slate-100 hover:bg-slate-200 active:bg-sky-100 active:scale-95 text-slate-900 rounded-xl font-black text-lg transition-all cursor-pointer shadow-sm border border-slate-200"
-                >
-                  {digit}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={handleNumpadClear}
-                className="py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 active:scale-95 rounded-xl font-bold text-xs transition-all cursor-pointer border border-rose-200"
-              >
-                مسح
-              </button>
-              <button
-                type="button"
-                onClick={() => handleNumpadPress('0')}
-                className="py-3 bg-slate-100 hover:bg-slate-200 active:bg-sky-100 active:scale-95 text-slate-900 rounded-xl font-black text-lg transition-all cursor-pointer shadow-sm border border-slate-200"
-              >
-                0
-              </button>
-              <button
-                type="button"
-                onClick={handleNumpadBackspace}
-                className="py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-95 rounded-xl font-bold flex items-center justify-center transition-all cursor-pointer border border-slate-200"
-              >
-                <Delete className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full py-3.5 text-white rounded-xl font-black text-sm shadow-lg active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 mt-2 ${
-                loginMode === 'owner'
-                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-purple-600/25'
-                  : 'bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 shadow-sky-500/25'
-              }`}
+              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-black text-sm shadow-xl shadow-sky-600/25 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <KeyRound className="w-4 h-4" />
-              <span>
-                {loginMode === 'owner' ? 'دخول لوحة تحكم المالك 👑' : 'دخول الكاشير وبدء الوردية 👷'}
-              </span>
+              <span>تسجيل الدخول والمطابقة</span>
+              <ArrowLeft className="w-4 h-4" />
             </button>
+          </form>
 
-            {/* PIN Hint */}
-            <div className="pt-1 text-center text-[11px] text-slate-400">
-              {loginMode === 'owner' ? (
-                <span>
-                  رمز PIN الافتراضي للمالك:{' '}
-                  <code className="font-mono font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">
-                    1234
-                  </code>
-                </span>
-              ) : (
-                <span>
-                  رمز PIN الافتراضي للكاشير:{' '}
-                  <code className="font-mono font-bold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded">
-                    0000
-                  </code>
-                </span>
+          {/* Quick Demo Access Helpers */}
+          <div className="mt-6 pt-5 border-t border-slate-100 text-xs">
+            <span className="text-[11px] font-bold text-slate-400 block mb-2.5 text-center">
+              أكواد تجريبية جاهزة للمعاينة السريعة:
+            </span>
+            <div className="grid grid-cols-2 gap-2 font-mono">
+              {ownerUser && (
+                <button
+                  type="button"
+                  onClick={() => handleQuickFill(ownerUser.pinCode)}
+                  className="p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5"
+                >
+                  <span className="text-[10px] font-bold font-sans text-purple-700 flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-purple-600" />
+                    <span>المالك 👑</span>
+                  </span>
+                  <span className="font-bold text-sm text-purple-950 tracking-wider">
+                    {ownerUser.pinCode}
+                  </span>
+                </button>
+              )}
+
+              {workerUser && (
+                <button
+                  type="button"
+                  onClick={() => handleQuickFill(workerUser.pinCode)}
+                  className="p-2.5 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-900 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5"
+                >
+                  <span className="text-[10px] font-bold font-sans text-sky-700 flex items-center gap-1">
+                    <User className="w-3 h-3 text-sky-600" />
+                    <span>الكاشير 👷</span>
+                  </span>
+                  <span className="font-bold text-sm text-sky-950 tracking-wider">
+                    {workerUser.pinCode}
+                  </span>
+                </button>
               )}
             </div>
-          </form>
+          </div>
         </div>
 
-        {/* Quick Testing Pills */}
-        <div className="mt-4 flex items-center justify-center gap-2 text-xs">
-          <span className="text-slate-400 text-[11px]">تجربة سريعة:</span>
-          <button
-            type="button"
-            onClick={handleQuickDemoOwner}
-            className="px-3 py-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 rounded-full font-bold text-[11px] transition-colors cursor-pointer"
-          >
-            👑 دخول المالك (1234)
-          </button>
-          <button
-            type="button"
-            onClick={handleQuickDemoWorker}
-            className="px-3 py-1 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 rounded-full font-bold text-[11px] transition-colors cursor-pointer"
-          >
-            👷 دخول الكاشير (0000)
-          </button>
+        {/* Footer Security Note */}
+        <div className="text-center mt-5 text-xs text-slate-400 flex items-center justify-center gap-1.5">
+          <Shield className="w-3.5 h-3.5 text-slate-500" />
+          <span>تحديد الصلاحيات تلقائياً حسب الرمز المطابق</span>
         </div>
       </div>
     </div>
