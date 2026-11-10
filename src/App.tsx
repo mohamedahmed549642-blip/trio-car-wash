@@ -1,0 +1,89 @@
+import React, { useState } from 'react';
+import { AppProvider, useApp } from './context/AppContext';
+import { Navbar, TabType } from './components/Navbar';
+import { POSDashboard } from './components/POS/POSDashboard';
+import { NewOrderModal } from './components/POS/NewOrderModal';
+import { ReceiptModal } from './components/POS/ReceiptModal';
+import { InventoryList } from './components/Inventory/InventoryList';
+import { ShiftManager } from './components/Shifts/ShiftManager';
+import { OrdersList } from './components/Orders/OrdersList';
+import { ReportsDashboard } from './components/Analytics/ReportsDashboard';
+import { SettingsView } from './components/Settings/SettingsView';
+import { ServiceOrder } from './types';
+import { Car, Heart } from 'lucide-react';
+
+const MainAppContent: React.FC = () => {
+  const { settings, currentShift, lowStockItems } = useApp();
+
+  const [activeTab, setActiveTab] = useState<TabType>('pos');
+  const [isNewOrderOpen, setIsNewOrderOpen] = useState(false);
+  const [justCreatedOrder, setJustCreatedOrder] = useState<ServiceOrder | null>(null);
+
+  const handleOrderCreated = (order: ServiceOrder) => {
+    setJustCreatedOrder(order);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-800 antialiased selection:bg-sky-500 selection:text-white">
+      {/* Top Navigation */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenNewOrder={() => setIsNewOrderOpen(true)}
+      />
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {activeTab === 'pos' && (
+          <POSDashboard onOpenNewOrder={() => setIsNewOrderOpen(true)} />
+        )}
+
+        {activeTab === 'inventory' && <InventoryList />}
+
+        {activeTab === 'shifts' && <ShiftManager />}
+
+        {activeTab === 'orders' && <OrdersList />}
+
+        {activeTab === 'reports' && <ReportsDashboard />}
+
+        {activeTab === 'settings' && <SettingsView />}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 print:hidden mt-auto">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-2 font-bold text-slate-700">
+            <Car className="w-4 h-4 text-sky-600" />
+            <span>{settings.shopName}</span>
+            <span className="text-slate-400 font-normal">| {settings.slogan}</span>
+          </div>
+
+          <div className="text-[11px] text-slate-400">
+            <span>نظام إدارة مغاسل السيارات ومخزون الزيوت السحابي • مخصص للسوق المصري 🇪🇬</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* Global Modals */}
+      <NewOrderModal
+        isOpen={isNewOrderOpen}
+        onClose={() => setIsNewOrderOpen(false)}
+        onOrderCreated={handleOrderCreated}
+      />
+
+      <ReceiptModal
+        order={justCreatedOrder}
+        isOpen={!!justCreatedOrder}
+        onClose={() => setJustCreatedOrder(null)}
+      />
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <AppProvider>
+      <MainAppContent />
+    </AppProvider>
+  );
+}
