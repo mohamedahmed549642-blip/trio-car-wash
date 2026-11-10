@@ -18,6 +18,7 @@ import { useApp } from '../../context/AppContext';
 import {
   generateWhatsAppInvoiceMessage,
   getWhatsAppDirectUrl,
+  getWhatsAppAppUrl,
 } from '../../services/whatsapp';
 
 interface ReceiptModalProps {
@@ -36,7 +37,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
     window.print();
   };
 
-  const handleSendWhatsApp = () => {
+  // Open WhatsApp Web
+  const handleSendWhatsAppWeb = () => {
     if (!order.customerPhone) {
       alert('يرجى التأكد من إدخال رقم هاتف العميل لإرسال الرسالة.');
       return;
@@ -44,6 +46,17 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
     const message = generateWhatsAppInvoiceMessage(order, settings);
     const url = getWhatsAppDirectUrl(order.customerPhone, message);
     window.open(url, '_blank');
+  };
+
+  // Open native WhatsApp app (Desktop / Mobile) directly
+  const handleSendWhatsAppApp = () => {
+    if (!order.customerPhone) {
+      alert('يرجى التأكد من إدخال رقم هاتف العميل لإرسال الرسالة.');
+      return;
+    }
+    const message = generateWhatsAppInvoiceMessage(order, settings);
+    const url = getWhatsAppAppUrl(order.customerPhone, message);
+    window.location.href = url;
   };
 
   const handleCopyMessage = () => {
@@ -79,18 +92,28 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
 
         {/* Action Buttons bar (hidden in print) */}
         <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-2.5 print:hidden">
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button
-              onClick={handleSendWhatsApp}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+              onClick={handleSendWhatsAppWeb}
+              className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+              title="فتح واتساب ويب في المتصفح"
             >
               <Share2 className="w-4 h-4" />
-              <span>إرسال واتساب للعميل 📱</span>
+              <span>واتساب ويب 🌐</span>
+            </button>
+
+            <button
+              onClick={handleSendWhatsAppApp}
+              className="inline-flex items-center justify-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs shadow-md shadow-teal-600/20 active:scale-95 transition-all cursor-pointer"
+              title="فتح في برنامج واتساب المثبت على الكمبيوتر أو الموبايل مباشرة"
+            >
+              <Phone className="w-4 h-4" />
+              <span>تطبيق واتساب 💻</span>
             </button>
 
             <button
               onClick={handleCopyMessage}
-              className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-slate-300 active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-300 active:scale-95 transition-all cursor-pointer"
               title="نسخ نص الفاتورة بالكامل للصقه يدوياً في أي محادثة"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-600" />}
@@ -99,19 +122,19 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
 
             <button
               onClick={handlePrint}
-              className="inline-flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span>طباعة 🖨️</span>
             </button>
           </div>
 
-          <div className="text-[11px] text-slate-500 bg-sky-50 p-2.5 rounded-xl border border-sky-200/60 leading-relaxed text-right flex items-start gap-2">
-            <MessageSquare className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+          <div className="text-[11px] text-slate-600 bg-amber-50 p-2.5 rounded-xl border border-amber-200 leading-relaxed text-right flex items-start gap-2">
+            <MessageSquare className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-sky-950 block">معلومة مهمة حول إرسال الواتساب:</span>
-              <span>
-                رقم الهاتف المُسجل ({order.customerPhone || 'بدون هاتف'}) هو <strong>رقم هاتف العميل المستلم</strong>. زر الواتساب يفتح محادثة لإرسال الفاتورة إليه من حساب واتساب المغسلة ولا يقوم بتسجيل الدخول في النظام.
+              <span className="font-bold text-amber-950 block">ملاحظة هامة جداً عن كود الأرقام (مثل 8574-8748):</span>
+              <span className="text-amber-900">
+                إذا ظهر لك كود أرقام ويطلب مطابقته على الموبايل، فهذا كود ربط <strong>واتساب المغسلة (الراسل)</strong> بالكمبيوتر لمرة واحدة فقط وليس حساب العميل. اربط واتساب المغسلة مرة واحدة على المتصفح، وبعدها ستفتح محادثة أي عميل تلقائياً بدون طلب أي كود!
               </span>
             </div>
           </div>
