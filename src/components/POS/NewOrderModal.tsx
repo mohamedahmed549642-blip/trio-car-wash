@@ -14,6 +14,8 @@ import {
   User,
   AlertCircle,
   HelpCircle,
+  Lock,
+  Play,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import {
@@ -44,7 +46,26 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
     findPreviousOrderByPlate,
     recentCarPlates,
     currentShift,
+    openShift,
+    activeUser,
   } = useApp();
+
+  // Shift opening state if modal opened while shift is closed
+  const [quickOpeningBalance, setQuickOpeningBalance] = useState<number>(200);
+  const [isOpeningShift, setIsOpeningShift] = useState(false);
+
+  const handleQuickOpenShift = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsOpeningShift(true);
+    try {
+      await openShift(quickOpeningBalance);
+    } catch (err) {
+      console.error(err);
+      alert('حدث خطأ أثناء فتح الوردية.');
+    } finally {
+      setIsOpeningShift(false);
+    }
+  };
 
   // Form State
   const [plateNumber, setPlateNumber] = useState('');
@@ -201,6 +222,11 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!currentShift) {
+      alert('لا يمكن إنشاء أو حفظ أمر التشغيل بدون فتح وردية أولاً!');
+      return;
+    }
+
     if (!plateNumber.trim()) {
       alert('يرجى إدخال رقم لوحة السيارة (مثال: أ ب ج 1 2 3 أو أرقام)');
       return;
@@ -298,15 +324,74 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
           </button>
         </div>
 
-        {/* Warning if no open shift */}
-        {!currentShift && (
-          <div className="bg-amber-500/10 border-b border-amber-500/30 px-6 py-2 text-xs text-amber-800 flex items-center gap-2 font-medium">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>تنبيه: لا توجد وردية مفتوحة حالياً، سيتم تسجيل الإيرادات بدون ربط بوردية محددة. يفضل فتح وردية من تبويب الوردية.</span>
-          </div>
-        )}
+        {/* Mandatory Shift Check */}
+        {!currentShift ? (
+          <div className="p-6 sm:p-10 text-center max-w-lg mx-auto space-y-5">
+            <div className="w-16 h-16 rounded-3xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto shadow-sm">
+              <Lock className="w-8 h-8" />
+            </div>
 
-        <form onSubmit={handleSubmit} autoComplete="off" className="p-4 sm:p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-black mb-2">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                <span>الوردية مغلقة حالياً</span>
+              </span>
+              <h3 className="text-xl font-black text-slate-900">
+                يجب فتح الوردية أولاً قبل استقبال السيارات
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                وفقاً لتعليمات المحاسبة وإدارة نقاط البيع، لا يمكن تسجيل أي أوامر تشغيل أو بيع زيوت بدون فتح وردية لتسجيل الإيرادات وعهدة الخزينة بدقة.
+              </p>
+            </div>
+
+            <form
+              onSubmit={handleQuickOpenShift}
+              className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-right space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold text-slate-800 mb-1">
+                  رصيد عهدة بداية الوردية (الفكة في الدرج بالجنيه) <span className="text-rose-500">*</span>:
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    value={quickOpeningBalance}
+                    onChange={(e) => setQuickOpeningBalance(Number(e.target.value))}
+                    placeholder="200 ج.م"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 font-bold font-mono text-slate-900 text-base focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  />
+                  <span className="absolute left-3 top-3 text-xs font-bold text-slate-400">
+                    ج.م
+                  </span>
+                </div>
+                <span className="text-[11px] text-slate-400 mt-1 block">
+                  المبلغ الموجود في الدرج كفكة لبداية الشيفت.
+                </span>
+              </div>
+
+              <div className="bg-white p-3 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+                <span className="text-slate-500 font-medium">الكاشير المستلم:</span>
+                <span className="font-bold text-slate-800">
+                  {activeUser.name} ({activeUser.role === 'admin' ? 'المالك 👑' : 'كاشير 👷'})
+                </span>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isOpeningShift}
+                className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Play className="w-4 h-4 fill-white" />
+                <span>
+                  {isOpeningShift ? 'جاري فتح الوردية...' : 'فتح الوردية وبدء تسجيل أمر التشغيل 🚀'}
+                </span>
+              </button>
+            </form>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} autoComplete="off" className="p-4 sm:p-6 space-y-6 max-h-[85vh] overflow-y-auto">
           {/* 1. Vehicle and Customer Section */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <h3 className="text-sm font-black text-slate-800 mb-3 flex items-center gap-2">
@@ -741,6 +826,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             </div>
           </div>
         </form>
+        )}
       </div>
     </div>
   );

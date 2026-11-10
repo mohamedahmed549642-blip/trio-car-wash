@@ -12,6 +12,7 @@ import {
   Receipt,
   AlertTriangle,
   ChevronLeft,
+  Lock,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ServiceOrder } from '../../types';
@@ -59,6 +60,37 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
 
   return (
     <div className="space-y-6">
+      {/* Shift Mandatory Warning Banner */}
+      {!currentShift && (
+        <div className="bg-amber-500/10 border-2 border-amber-500/30 p-4 sm:p-5 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-amber-950 shadow-sm animate-pulse">
+          <div className="flex items-start gap-3.5">
+            <div className="p-2.5 bg-amber-500 text-white rounded-2xl shrink-0 mt-0.5 shadow-md shadow-amber-500/30">
+              <Lock className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 font-black text-[10px]">
+                  مطلوب أولاً
+                </span>
+                <strong className="text-sm font-black text-amber-900">
+                  الوردية مغلقة حالياً — يجب فتح وردية وتحديد عهدة الخزينة قبل بدء أي عمل!
+                </strong>
+              </div>
+              <p className="text-xs text-amber-800 leading-relaxed">
+                وفقاً لقواعد الكاشير المحاسبية، لا يسمح النظام بتسجيل غسيل سيارات أو صرف زيوت إلا بوجود وردية نشطة.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenNewOrder}
+            className="px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-black text-xs shadow-lg shadow-amber-600/25 active:scale-95 transition-all cursor-pointer shrink-0 flex items-center justify-center gap-2"
+          >
+            <Lock className="w-4 h-4" />
+            <span>فتح الوردية الآن 🔓</span>
+          </button>
+        </div>
+      )}
+
       {/* Top Banner / Call to Action */}
       <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         {/* Subtle decorative glow */}
@@ -81,10 +113,23 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               onClick={onOpenNewOrder}
-              className="py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+              className={`py-4 px-6 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                currentShift
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/30'
+                  : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-amber-500/30 ring-2 ring-amber-300'
+              }`}
             >
-              <Plus className="w-5 h-5 stroke-[3]" />
-              <span>أمر تشغيل سيارة جديد (كاشير) 🚀</span>
+              {currentShift ? (
+                <>
+                  <Plus className="w-5 h-5 stroke-[3]" />
+                  <span>أمر تشغيل سيارة جديد (كاشير) 🚀</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-5 h-5" />
+                  <span>فتح الوردية وبدء أمر جديد 🔓</span>
+                </>
+              )}
             </button>
           </div>
         </div>
