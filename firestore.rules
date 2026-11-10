@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Inventory items (oils, filters, supplies)
+    match /inventory/{itemId} {
+      allow read, write: if true;
+    }
+
+    // Service & Wash Orders
+    match /orders/{orderId} {
+      allow read, write: if true;
+    }
+
+    // Shifts & Cash Register Balances
+    match /shifts/{shiftId} {
+      allow read, write: if true;
+    }
+
+    // Inventory Movements (restock, deduction, adjustments)
+    match /stock_movements/{movementId} {
+      allow read, write: if true;
+    }
+
+    // Shift Expenses & Petty Cash
+    match /expenses/{expenseId} {
+      allow read, write: if true;
+    }
+
+    // Shop Settings & Configuration
+    match /settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // System Users & Workers
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+  }
+}
