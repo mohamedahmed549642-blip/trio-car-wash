@@ -48,6 +48,9 @@ interface AppContextType {
   users: UserProfile[];
   switchUser: (userId: string) => void;
   isAdmin: boolean;
+  addUser: (userData: Omit<UserProfile, 'id'>) => Promise<UserProfile>;
+  updateUser: (user: UserProfile) => Promise<void>;
+  deleteUser: (userId: string) => Promise<boolean>;
 
   // Settings & Cloud
   settings: ShopSettings;
@@ -72,7 +75,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [shifts, setShifts] = useState<Shift[]>(() => storage.getShifts());
   const [expenses, setExpenses] = useState<Expense[]>(() => storage.getExpenses());
   const [settings, setSettings] = useState<ShopSettings>(() => storage.getSettings());
-  const [users] = useState<UserProfile[]>(() => storage.getUsers());
+  const [users, setUsers] = useState<UserProfile[]>(() => storage.getUsers());
   const [activeUser, setActiveUser] = useState<UserProfile>(() => storage.getActiveUser());
   const [isCloudConnected, setIsCloudConnected] = useState<boolean>(false);
   const [isDeveloperUnlocked, setIsDeveloperUnlocked] = useState<boolean>(() => {
@@ -447,13 +450,51 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return newExpense;
   };
 
-  // --- Auth Switcher ---
+  // --- Auth Switcher & Staff Management ---
   const switchUser = (userId: string) => {
     const target = users.find((u) => u.id === userId);
     if (target) {
       setActiveUser(target);
       storage.saveActiveUser(target);
     }
+  };
+
+  const addUser = async (userData: Omit<UserProfile, 'id'>): Promise<UserProfile> => {
+    const newUser: UserProfile = {
+      ...userData,
+      id: 'user_' + Date.now(),
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [...users, newUser];
+    setUsers(updated);
+    await storage.saveUsers(updated);
+    return newUser;
+  };
+
+  const updateUser = async (user: UserProfile): Promise<void> => {
+    const updated = users.map((u) => (u.id === user.id ? user : u));
+    setUsers(updated);
+    await storage.saveUsers(updated);
+    if (activeUser.id === user.id) {
+      setActiveUser(user);
+      storage.saveActiveUser(user);
+    }
+  };
+
+  const deleteUser = async (userId: string): Promise<boolean> => {
+    if (users.length <= 1) return false;
+    const target = users.find((u) => u.id === userId);
+    if (target?.role === 'admin' && users.filter((u) => u.role === 'admin').length <= 1) {
+      return false; // لا يمكن مسح المالك الوحيد
+    }
+    const updated = users.filter((u) => u.id !== userId);
+    setUsers(updated);
+    await storage.saveUsers(updated);
+    if (activeUser.id === userId && updated.length > 0) {
+      setActiveUser(updated[0]);
+      storage.saveActiveUser(updated[0]);
+    }
+    return true;
   };
 
   const updateSettings = async (newSettings: ShopSettings): Promise<void> => {
@@ -488,6 +529,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         users,
         switchUser,
         isAdmin: activeUser.role === 'admin',
+        addUser,
+        updateUser,
+        deleteUser,
         settings,
         updateSettings,
         isCloudConnected,

@@ -2,16 +2,23 @@ import { InventoryItem, ServiceItem, ShopSettings, UserProfile } from '../types'
 
 export const INITIAL_USERS: UserProfile[] = [
   {
-    id: 'user_admin',
-    name: 'المهندس أحمد (المدير)',
+    id: 'user_owner',
+    name: 'المهندس أحمد (صاحب المغسلة / المالك)',
     role: 'admin',
     pinCode: '1234',
+    phone: '01012345678',
+    jobTitle: 'المالك والمدير العام',
+    createdAt: '2026-01-01T08:00:00.000Z',
   },
   {
-    id: 'user_cashier',
-    name: 'محمد الكاشير (فني الوردية)',
+    id: 'user_worker_1',
+    name: 'محمد علي (عامل وكاشير)',
     role: 'cashier',
     pinCode: '0000',
+    phone: '01123456789',
+    jobTitle: 'كاشير وفني تغيير زيوت',
+    dailyWage: 250,
+    createdAt: '2026-01-01T08:00:00.000Z',
   },
 ];
 

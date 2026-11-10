@@ -13,10 +13,11 @@ import {
   Sparkles,
   Lock,
   Unlock,
+  Users,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-export type TabType = 'pos' | 'inventory' | 'shifts' | 'orders' | 'reports' | 'settings';
+export type TabType = 'pos' | 'inventory' | 'shifts' | 'orders' | 'reports' | 'workers' | 'settings';
 
 interface NavbarProps {
   activeTab: TabType;
@@ -205,6 +206,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               </button>
             )}
 
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('workers')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'workers'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>العمال والفريق</span>
+              </button>
+            )}
+
             <button
               onClick={() => setActiveTab('settings')}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
@@ -281,6 +296,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             >
               <BarChart3 className="w-4 h-4" />
               <span>التقارير</span>
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              onClick={() => setActiveTab('workers')}
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
+                activeTab === 'workers' ? 'text-sky-400 font-bold' : 'text-slate-400'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>العمال</span>
             </button>
           )}
           <button

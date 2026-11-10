@@ -5,6 +5,10 @@ export interface UserProfile {
   name: string;
   role: UserRole;
   pinCode: string;
+  phone?: string;
+  jobTitle?: string;
+  dailyWage?: number;
+  createdAt?: string;
 }
 
 export type VehicleSize = 'sedan' | 'suv' | 'van' | 'motorcycle';

@@ -8,6 +8,7 @@ import { InventoryList } from './components/Inventory/InventoryList';
 import { ShiftManager } from './components/Shifts/ShiftManager';
 import { OrdersList } from './components/Orders/OrdersList';
 import { ReportsDashboard } from './components/Analytics/ReportsDashboard';
+import { WorkersManager } from './components/Workers/WorkersManager';
 import { SettingsView } from './components/Settings/SettingsView';
 import { ServiceOrder } from './types';
 import { Car, Heart } from 'lucide-react';
@@ -45,6 +46,8 @@ const MainAppContent: React.FC = () => {
         {activeTab === 'orders' && <OrdersList />}
 
         {activeTab === 'reports' && <ReportsDashboard />}
+
+        {activeTab === 'workers' && <WorkersManager />}
 
         {activeTab === 'settings' && <SettingsView />}
       </main>

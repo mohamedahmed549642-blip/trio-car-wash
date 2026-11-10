@@ -221,8 +221,20 @@ export const storage = {
     }
   },
 
-  saveUsers: (users: UserProfile[]): void => {
+  saveUsers: async (users: UserProfile[]): Promise<void> => {
     localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+    const db = getFirebaseDb();
+    if (db) {
+      try {
+        const batch = writeBatch(db);
+        users.forEach((u) => {
+          batch.set(doc(db, 'users', u.id), u);
+        });
+        await batch.commit();
+      } catch (err) {
+        console.warn('Firebase sync users error:', err);
+      }
+    }
   },
 
   getActiveUser: (): UserProfile => {
