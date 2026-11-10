@@ -40,7 +40,6 @@ interface AppContextType {
   currentShift: Shift | null;
   openShift: (openingBalance: number) => Promise<Shift>;
   closeShift: (actualCash: number, notes?: string) => Promise<Shift | null>;
-  deleteShift: (shiftId: string) => Promise<boolean>;
   expenses: Expense[];
   addExpense: (category: Expense['category'], amount: number, description: string) => Promise<Expense>;
 
@@ -55,6 +54,12 @@ interface AppContextType {
   updateSettings: (newSettings: ShopSettings) => Promise<void>;
   isCloudConnected: boolean;
   reconnectCloud: () => void;
+
+  // Developer Access Control
+  isDeveloperUnlocked: boolean;
+  loginDeveloper: (password: string) => boolean;
+  logoutDeveloper: () => void;
+  updateDeveloperPassword: (newPass: string) => Promise<boolean>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -70,6 +75,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [users] = useState<UserProfile[]>(() => storage.getUsers());
   const [activeUser, setActiveUser] = useState<UserProfile>(() => storage.getActiveUser());
   const [isCloudConnected, setIsCloudConnected] = useState<boolean>(false);
+  const [isDeveloperUnlocked, setIsDeveloperUnlocked] = useState<boolean>(() => {
+    return sessionStorage.getItem('trio_dev_unlocked') === 'true';
+  });
+
+  const loginDeveloper = (password: string): boolean => {
+    const validPassword = settings.developerPassword || 'dev@trio2026';
+    if (password === validPassword) {
+      setIsDeveloperUnlocked(true);
+      sessionStorage.setItem('trio_dev_unlocked', 'true');
+      return true;
+    }
+    return false;
+  };
+
+  const logoutDeveloper = () => {
+    setIsDeveloperUnlocked(false);
+    sessionStorage.removeItem('trio_dev_unlocked');
+  };
+
+  const updateDeveloperPassword = async (newPass: string): Promise<boolean> => {
+    if (!newPass || newPass.trim().length < 4) return false;
+    const updated = { ...settings, developerPassword: newPass.trim() };
+    setSettings(updated);
+    await storage.saveSettings(updated);
+    return true;
+  };
 
   // Initialize Firebase connection if configured
   useEffect(() => {
@@ -376,13 +407,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return updatedShift;
   };
 
-  const deleteShift = async (shiftId: string): Promise<boolean> => {
-    const updated = shifts.filter((s) => s.id !== shiftId);
-    setShifts(updated);
-    await storage.saveShifts(updated);
-    return true;
-  };
-
   // --- Expenses Actions ---
   const addExpense = async (
     category: Expense['category'],
@@ -458,7 +482,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         currentShift,
         openShift,
         closeShift,
-        deleteShift,
         expenses,
         addExpense,
         activeUser,
@@ -469,6 +492,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateSettings,
         isCloudConnected,
         reconnectCloud,
+        isDeveloperUnlocked,
+        loginDeveloper,
+        logoutDeveloper,
+        updateDeveloperPassword,
       }}
     >
       {children}

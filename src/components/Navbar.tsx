@@ -2,17 +2,17 @@ import React from 'react';
 import {
   Car,
   Package,
-  Layers,
   FileText,
   BarChart3,
   Settings,
-  AlertTriangle,
   User,
   Cloud,
   CloudOff,
   CircleDollarSign,
   Clock,
   Sparkles,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -26,7 +26,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenNewOrder }) => {
   const {
-    settings,
     lowStockItems,
     currentShift,
     activeUser,
@@ -34,6 +33,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
     switchUser,
     isAdmin,
     isCloudConnected,
+    isDeveloperUnlocked,
+    logoutDeveloper,
   } = useApp();
 
   return (
@@ -65,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             {currentShift ? (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
                 <Clock className="w-3.5 h-3.5 text-sky-400" />
-                <span>{currentShift.shiftNumber} مفتوحة (الكاشير: {currentShift.cashierName})</span>
+                <span>{currentShift.shiftNumber} مفتوحة ({currentShift.cashierName})</span>
               </span>
             ) : (
               <button
@@ -78,8 +79,22 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           </div>
         </div>
 
-        {/* User Role Switcher */}
+        {/* User Role Switcher & Developer Status */}
         <div className="flex items-center gap-2">
+          {isDeveloperUnlocked && (
+            <div className="flex items-center gap-1.5 bg-purple-500/20 border border-purple-500/40 text-purple-300 px-2 py-0.5 rounded-lg text-xs font-bold">
+              <Unlock className="w-3 h-3 text-purple-400" />
+              <span>مطور النظام</span>
+              <button
+                onClick={() => logoutDeveloper()}
+                className="text-purple-200 hover:text-white underline text-[10px] mr-1"
+                title="قفل وضع المطور"
+              >
+                (قفل 🔒)
+              </button>
+            </div>
+          )}
+
           <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1">
             <User className="w-3.5 h-3.5 text-sky-400" />
             <span className="text-slate-400">المستخدم:</span>
@@ -198,8 +213,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <Settings className="w-4 h-4" />
-              <span>الإعدادات</span>
+              {isDeveloperUnlocked ? <Unlock className="w-4 h-4 text-emerald-400" /> : <Lock className="w-4 h-4 text-amber-400" />}
+              <span>الإعدادات {isDeveloperUnlocked ? '🔓' : '🔒'}</span>
             </button>
           </nav>
 
@@ -274,8 +289,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               activeTab === 'settings' ? 'text-sky-400 font-bold' : 'text-slate-400'
             }`}
           >
-            <Settings className="w-4 h-4" />
-            <span>الإعدادات</span>
+            {isDeveloperUnlocked ? <Unlock className="w-4 h-4 text-emerald-400" /> : <Lock className="w-4 h-4 text-amber-400" />}
+            <span>الإعدادات {isDeveloperUnlocked ? '🔓' : '🔒'}</span>
           </button>
         </div>
       </div>

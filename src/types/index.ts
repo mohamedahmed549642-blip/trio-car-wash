@@ -144,4 +144,5 @@ export interface ShopSettings {
     appId: string;
   };
   cloudSyncEnabled: boolean;
+  developerPassword?: string;
 }

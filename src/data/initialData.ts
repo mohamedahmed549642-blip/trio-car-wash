@@ -25,6 +25,7 @@ export const INITIAL_SETTINGS: ShopSettings = {
   receiptFooterMessage: 'شكراً لزيارتكم تريو كار ووش! نتمنى لكم قيادة آمنة دائماً.',
   whatsappMessageTemplate: 'أهلاً بحضرتك يا فندم! 🚗\nتمت صيانة وغسيل سيارتكم بنجاح في مركز تريو كار ووش.\n\nرقم الفاتورة: {orderNumber}\nالسيارة: {carModel} ({plateNumber})\nالخدمات والزيوت: {summary}\nالإجمالي: {total} ج.م\nالعداد الحالي: {currentOdometer} كم\nميعاد غيار الزيت القادم: عند عداد {nextOilOdometer} كم أو تاريخ {nextOilDate}.\n\nنسعد دائماً بخدمتكم! ✨',
   cloudSyncEnabled: false,
+  developerPassword: 'dev@trio2026',
 };
 
 export const INITIAL_SERVICES: ServiceItem[] = [
