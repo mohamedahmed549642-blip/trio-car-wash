@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Printer,
   Share2,
@@ -9,6 +9,9 @@ import {
   Calendar,
   Gauge,
   Car,
+  Copy,
+  Check,
+  MessageSquare,
 } from 'lucide-react';
 import { ServiceOrder } from '../../types';
 import { useApp } from '../../context/AppContext';
@@ -25,6 +28,7 @@ interface ReceiptModalProps {
 
 export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClose }) => {
   const { settings } = useApp();
+  const [copied, setCopied] = useState(false);
 
   if (!isOpen || !order) return null;
 
@@ -40,6 +44,13 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
     const message = generateWhatsAppInvoiceMessage(order, settings);
     const url = getWhatsAppDirectUrl(order.customerPhone, message);
     window.open(url, '_blank');
+  };
+
+  const handleCopyMessage = () => {
+    const message = generateWhatsAppInvoiceMessage(order, settings);
+    navigator.clipboard.writeText(message);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   const paymentMethodLabel: Record<string, string> = {
@@ -67,21 +78,43 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
         </div>
 
         {/* Action Buttons bar (hidden in print) */}
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-2 print:hidden">
-          <button
-            onClick={handleSendWhatsApp}
-            className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
-          >
-            <Share2 className="w-4 h-4" />
-            <span>إرسال عبر WhatsApp 📱</span>
-          </button>
-          <button
-            onClick={handlePrint}
-            className="inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-md active:scale-95 transition-all"
-          >
-            <Printer className="w-4 h-4" />
-            <span>طباعة الفاتورة 🖨️</span>
-          </button>
+        <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-2.5 print:hidden">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleSendWhatsApp}
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>إرسال واتساب للعميل 📱</span>
+            </button>
+
+            <button
+              onClick={handleCopyMessage}
+              className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-slate-300 active:scale-95 transition-all cursor-pointer"
+              title="نسخ نص الفاتورة بالكامل للصقه يدوياً في أي محادثة"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-600" />}
+              <span>{copied ? 'تم النسخ! ✨' : 'نسخ النص 📋'}</span>
+            </button>
+
+            <button
+              onClick={handlePrint}
+              className="inline-flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+            >
+              <Printer className="w-4 h-4" />
+              <span>طباعة 🖨️</span>
+            </button>
+          </div>
+
+          <div className="text-[11px] text-slate-500 bg-sky-50 p-2.5 rounded-xl border border-sky-200/60 leading-relaxed text-right flex items-start gap-2">
+            <MessageSquare className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold text-sky-950 block">معلومة مهمة حول إرسال الواتساب:</span>
+              <span>
+                رقم الهاتف المُسجل ({order.customerPhone || 'بدون هاتف'}) هو <strong>رقم هاتف العميل المستلم</strong>. زر الواتساب يفتح محادثة لإرسال الفاتورة إليه من حساب واتساب المغسلة ولا يقوم بتسجيل الدخول في النظام.
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Thermal Receipt Content */}

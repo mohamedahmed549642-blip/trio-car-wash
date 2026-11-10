@@ -81,6 +81,18 @@ export const getWhatsAppDirectUrl = (phone: string, message: string): string => 
   return `https://wa.me/${formattedPhone}?text=${encodedText}`;
 };
 
+export const getWhatsAppAppUrl = (phone: string, message: string): string => {
+  const formattedPhone = formatEgyptianPhoneNumber(phone);
+  const encodedText = encodeURIComponent(message);
+  return `whatsapp://send?phone=${formattedPhone}&text=${encodedText}`;
+};
+
+export const getWhatsAppWebUrl = (phone: string, message: string): string => {
+  const formattedPhone = formatEgyptianPhoneNumber(phone);
+  const encodedText = encodeURIComponent(message);
+  return `https://web.whatsapp.com/send?phone=${formattedPhone}&text=${encodedText}`;
+};
+
 export const generateOilDueReminderMessage = (
   order: ServiceOrder,
   settings: ShopSettings

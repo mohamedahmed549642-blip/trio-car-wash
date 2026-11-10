@@ -306,7 +306,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} autoComplete="off" className="p-4 sm:p-6 space-y-6 max-h-[85vh] overflow-y-auto">
           {/* 1. Vehicle and Customer Section */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <h3 className="text-sm font-black text-slate-800 mb-3 flex items-center gap-2">
@@ -353,6 +353,8 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
                   <input
                     type="text"
                     required
+                    name="order_vehicle_plate"
+                    autoComplete="off"
                     placeholder="مثال: ق ج د 1 2 3 4"
                     value={plateNumber}
                     onChange={(e) => handlePlateChange(e.target.value)}
@@ -371,6 +373,8 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
                 <label className="block font-bold text-slate-700 mb-1">موديل وماركة السيارة</label>
                 <input
                   type="text"
+                  name="order_car_model"
+                  autoComplete="off"
                   placeholder="مثال: كيا سيراتو 2022"
                   value={carModel}
                   onChange={(e) => setCarModel(e.target.value)}
@@ -382,6 +386,8 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
                 <label className="block font-bold text-slate-700 mb-1">اسم العميل</label>
                 <input
                   type="text"
+                  name="order_customer_name"
+                  autoComplete="off"
                   placeholder="مثال: أ/ أحمد محمود"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
@@ -391,10 +397,12 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  رقم الهاتف (لإرسال الواتساب)
+                  موبايل العميل (لإرسال الفاتورة بالواتساب)
                 </label>
                 <input
                   type="tel"
+                  name="order_customer_phone_pos"
+                  autoComplete="off"
                   placeholder="01012345678"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}

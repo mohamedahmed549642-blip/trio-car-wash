@@ -200,6 +200,7 @@ export const LoginPage: React.FC = () => {
               e.preventDefault();
               handleLoginSubmit();
             }}
+            autoComplete="off"
             className="space-y-4 text-xs"
           >
             {/* User Select Box */}
@@ -245,6 +246,8 @@ export const LoginPage: React.FC = () => {
                 <input
                   ref={pinInputRef}
                   type={showPin ? 'text' : 'password'}
+                  name="user_pin_code"
+                  autoComplete="off"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={6}
