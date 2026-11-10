@@ -34,7 +34,7 @@ export interface InventoryItem {
   compatibleModels?: string[]; // e.g. فلاتر هيونداي / كيا / تويوتا
 }
 
-export type StockMovementType = 'restock' | 'sale' | 'service_usage' | 'adjustment' | 'waste';
+export type StockMovementType = 'restock' | 'sale' | 'service_usage' | 'adjustment' | 'waste' | 'deduction';
 
 export interface StockMovement {
   id: string;

@@ -20,8 +20,8 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
     preselectedItem?.id || (inventory[0]?.id || '')
   );
   const [quantity, setQuantity] = useState<number>(1);
-  const [movementType, setMovementType] = useState<StockMovementType>('adjustment');
-  const [reason, setReason] = useState<string>('تسوية عجز جردي');
+  const [movementType, setMovementType] = useState<StockMovementType>('deduction');
+  const [reason, setReason] = useState<string>('خصم يدوي من المخزن');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedItem = inventory.find((i) => i.id === selectedItemId);
@@ -124,10 +124,19 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
               <label className="block font-bold text-slate-700 mb-1">نوع حركة الخصم:</label>
               <select
                 value={movementType}
-                onChange={(e) => setMovementType(e.target.value as StockMovementType)}
+                onChange={(e) => {
+                  const val = e.target.value as StockMovementType;
+                  setMovementType(val);
+                  if (val === 'deduction' && reason === 'تسوية عجز جردي') setReason('خصم يدوي من المخزن');
+                  if (val === 'adjustment') setReason('تسوية جردية ومطابقة رصيد');
+                  if (val === 'waste') setReason('تالف أو عبوة مسربة / كسر');
+                  if (val === 'service_usage') setReason('استهلاك داخلي في تشغيل المغسلة');
+                  if (val === 'sale') setReason('بيع مباشر نقدي للعميل');
+                }}
                 className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none"
               >
-                <option value="adjustment">تسوية جردية (عجز)</option>
+                <option value="deduction">خصم يدوي / سحب من المخزن</option>
+                <option value="adjustment">تسوية جردية (عجز جرد أو مطابقة)</option>
                 <option value="waste">تالف أو عبوة مسربة / منتهية</option>
                 <option value="service_usage">استهلاك داخلي في المغسلة</option>
                 <option value="sale">بيع خارجي مباشر</option>
