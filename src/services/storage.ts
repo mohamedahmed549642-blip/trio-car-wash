@@ -210,15 +210,27 @@ export const storage = {
 
   getUsers: (): UserProfile[] => {
     const data = localStorage.getItem(KEYS.USERS);
-    if (!data) {
+    let usersList: UserProfile[] = INITIAL_USERS;
+    if (data) {
+      try {
+        usersList = JSON.parse(data);
+      } catch {
+        usersList = INITIAL_USERS;
+      }
+    } else {
       localStorage.setItem(KEYS.USERS, JSON.stringify(INITIAL_USERS));
-      return INITIAL_USERS;
     }
-    try {
-      return JSON.parse(data);
-    } catch {
-      return INITIAL_USERS;
-    }
+
+    // Ensure all users have valid username and password
+    return usersList.map((u) => {
+      const defaultUsername = u.username || (u.role === 'admin' ? 'owner' : `worker_${u.id.slice(-4)}`);
+      const defaultPassword = u.password || (u.pinCode === '1234' || u.pinCode === '0000' ? '123' : u.pinCode) || '123';
+      return {
+        ...u,
+        username: defaultUsername,
+        password: defaultPassword,
+      };
+    });
   },
 
   saveUsers: async (users: UserProfile[]): Promise<void> => {

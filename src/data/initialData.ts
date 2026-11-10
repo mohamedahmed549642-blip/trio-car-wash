@@ -4,6 +4,8 @@ export const INITIAL_USERS: UserProfile[] = [
   {
     id: 'user_owner',
     name: 'المهندس أحمد (صاحب المغسلة / المالك)',
+    username: 'owner',
+    password: '123',
     role: 'admin',
     pinCode: '1234',
     phone: '01012345678',
@@ -13,6 +15,8 @@ export const INITIAL_USERS: UserProfile[] = [
   {
     id: 'user_worker_1',
     name: 'محمد علي (عامل وكاشير)',
+    username: 'cashier',
+    password: '123',
     role: 'cashier',
     pinCode: '0000',
     phone: '01123456789',

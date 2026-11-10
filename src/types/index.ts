@@ -3,6 +3,8 @@ export type UserRole = 'admin' | 'cashier';
 export interface UserProfile {
   id: string;
   name: string;
+  username: string; // اسم المستخدم للدخول (e.g. owner, cashier)
+  password?: string; // كلمة المرور
   role: UserRole;
   pinCode: string;
   phone?: string;

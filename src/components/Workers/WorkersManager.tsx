@@ -27,14 +27,15 @@ export const WorkersManager: React.FC = () => {
 
   // Form State
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('worker1');
+  const [password, setPassword] = useState('123');
   const [role, setRole] = useState<UserRole>('cashier');
   const [jobTitle, setJobTitle] = useState('فني تغيير زيوت وغسيل');
   const [phone, setPhone] = useState('');
-  const [pinCode, setPinCode] = useState('0000');
   const [dailyWage, setDailyWage] = useState<number>(250);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Visible PINs map
+  // Visible Passwords map
   const [visiblePins, setVisiblePins] = useState<Record<string, boolean>>({});
 
   const togglePinVisibility = (id: string) => {
@@ -44,10 +45,11 @@ export const WorkersManager: React.FC = () => {
   const openAddModal = () => {
     setEditingUser(null);
     setName('');
+    setUsername(`worker_${Math.floor(100 + Math.random() * 900)}`);
+    setPassword('123');
     setRole('cashier');
     setJobTitle('فني غسيل وتغيير زيوت');
     setPhone('');
-    setPinCode('0000');
     setDailyWage(250);
     setIsAddModalOpen(true);
   };
@@ -55,10 +57,11 @@ export const WorkersManager: React.FC = () => {
   const openEditModal = (user: UserProfile) => {
     setEditingUser(user);
     setName(user.name);
+    setUsername(user.username || (user.role === 'admin' ? 'owner' : 'worker'));
+    setPassword(user.password || user.pinCode || '123');
     setRole(user.role);
     setJobTitle(user.jobTitle || 'عامل / فني');
     setPhone(user.phone || '');
-    setPinCode(user.pinCode || '0000');
     setDailyWage(user.dailyWage || 0);
     setIsAddModalOpen(true);
   };
@@ -69,8 +72,12 @@ export const WorkersManager: React.FC = () => {
       alert('يرجى إدخال اسم العامل.');
       return;
     }
-    if (!pinCode || pinCode.length < 4) {
-      alert('يرجى إدخال رمز PIN مكون من 4 أرقام على الأقل لسرعة تسجيل الدخول.');
+    if (!username.trim()) {
+      alert('يرجى إدخال اسم المستخدم للدخول.');
+      return;
+    }
+    if (!password.trim()) {
+      alert('يرجى إدخال كلمة المرور للدخول.');
       return;
     }
 
@@ -80,23 +87,27 @@ export const WorkersManager: React.FC = () => {
         await updateUser({
           ...editingUser,
           name: name.trim(),
+          username: username.trim().toLowerCase(),
+          password: password.trim(),
           role,
           jobTitle: jobTitle.trim(),
           phone: phone.trim(),
-          pinCode: pinCode.trim(),
+          pinCode: password.trim(),
           dailyWage: dailyWage || 0,
         });
         alert('تم تعديل بيانات العامل بنجاح!');
       } else {
         await addUser({
           name: name.trim(),
+          username: username.trim().toLowerCase(),
+          password: password.trim(),
           role,
           jobTitle: jobTitle.trim(),
           phone: phone.trim(),
-          pinCode: pinCode.trim(),
+          pinCode: password.trim(),
           dailyWage: dailyWage || 0,
         });
-        alert(`تمت إضافة العامل "${name.trim()}" بنجاح! يمكنه الآن العمل واستلام الورديات.`);
+        alert(`تمت إضافة العامل "${name.trim()}" بنجاح!\nاسم المستخدم: ${username.trim().toLowerCase()}\nكلمة المرور: ${password.trim()}`);
       }
       setIsAddModalOpen(false);
     } catch (err) {
@@ -221,10 +232,11 @@ export const WorkersManager: React.FC = () => {
             <thead>
               <tr className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
                 <th className="py-3 px-4">اسم الفرد</th>
+                <th className="py-3 px-4">اسم المستخدم</th>
                 <th className="py-3 px-4 text-center">نوع الصلاحية</th>
                 <th className="py-3 px-4">المسمى والوظيفة</th>
                 <th className="py-3 px-4">رقم الهاتف</th>
-                <th className="py-3 px-4 text-center">رمز الدخول (PIN)</th>
+                <th className="py-3 px-4 text-center">كلمة المرور</th>
                 <th className="py-3 px-4 text-left">اليومية المقدرة</th>
                 <th className="py-3 px-4 text-center">إجراءات المالك</th>
               </tr>
@@ -265,6 +277,11 @@ export const WorkersManager: React.FC = () => {
                       </div>
                     </td>
 
+                    {/* Username */}
+                    <td className="py-3 px-4 font-mono font-bold text-sky-800 text-xs">
+                      @{u.username || (isOwner ? 'owner' : 'cashier')}
+                    </td>
+
                     {/* Role Badge */}
                     <td className="py-3 px-4 text-center">
                       {isOwner ? (
@@ -289,17 +306,17 @@ export const WorkersManager: React.FC = () => {
                       {u.phone || 'غير مسجل'}
                     </td>
 
-                    {/* PIN Code with toggle */}
+                    {/* Password with toggle */}
                     <td className="py-3 px-4 text-center font-mono">
-                      <div className="inline-flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200">
+                      <div className="inline-flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
                         <span className="font-bold text-slate-800 tracking-wider">
-                          {showPin ? u.pinCode : '••••'}
+                          {showPin ? (u.password || u.pinCode) : '••••'}
                         </span>
                         <button
                           type="button"
                           onClick={() => togglePinVisibility(u.id)}
                           className="text-slate-400 hover:text-slate-600 cursor-pointer ml-1"
-                          title={showPin ? 'إخفاء PIN' : 'إظهار PIN'}
+                          title={showPin ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
                         >
                           {showPin ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                         </button>
@@ -409,29 +426,44 @@ export const WorkersManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">رقم الهاتف:</label>
-                  <input
-                    type="tel"
-                    placeholder="010xxxxxxxx"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                  />
-                </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">رقم الهاتف:</label>
+                <input
+                  type="tel"
+                  placeholder="010xxxxxxxx"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                />
+              </div>
 
+              {/* Username & Password */}
+              <div className="grid grid-cols-2 gap-3 p-3 bg-emerald-50/60 rounded-xl border border-emerald-200">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    رمز الدخول السريع (PIN / الكود) <span className="text-rose-500">*</span>:
+                  <label className="block font-bold text-slate-800 mb-1">
+                    اسم المستخدم للدخول <span className="text-rose-500">*</span>:
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="مثال: 1234 أو 857487487"
-                    value={pinCode}
-                    onChange={(e) => setPinCode(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-mono font-bold tracking-widest text-center focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    placeholder="مثال: cashier1 أو ali"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-800 mb-1">
+                    كلمة المرور (Password) <span className="text-rose-500">*</span>:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="مثال: 123 أو 123456"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-mono font-bold text-center focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>

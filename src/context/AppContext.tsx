@@ -50,6 +50,10 @@ interface AppContextType {
   isAuthenticated: boolean;
   loginUser: (userId: string, pin: string) => { success: boolean; message?: string };
   loginByPin: (pinOrCode: string) => { success: boolean; message?: string; user?: UserProfile };
+  loginWithCredentials: (
+    username: string,
+    password: string
+  ) => { success: boolean; message?: string; user?: UserProfile };
   logoutUser: () => void;
   switchUser: (userId: string) => void;
   isAdmin: boolean;
@@ -124,6 +128,52 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       return {
         success: false,
         message: 'رمز الدخول غير مطابق لأي حساب مسجل! يرجى التأكد من كتابة الرمز الصحيح.',
+      };
+    }
+
+    setCurrentUser(target);
+    sessionStorage.setItem('trio_auth_user_id', target.id);
+    storage.saveActiveUser(target);
+    return { success: true, user: target };
+  };
+
+  const loginWithCredentials = (
+    usernameInput: string,
+    passwordInput: string
+  ): { success: boolean; message?: string; user?: UserProfile } => {
+    const cleanUser = usernameInput.trim().toLowerCase();
+    const cleanPass = passwordInput.trim();
+
+    if (!cleanUser) {
+      return { success: false, message: 'يرجى إدخال اسم المستخدم.' };
+    }
+    if (!cleanPass) {
+      return { success: false, message: 'يرجى إدخال كلمة المرور.' };
+    }
+
+    // Match user by username, phone, or name
+    const target = users.find((u) => {
+      const matchUsername = u.username && u.username.toLowerCase() === cleanUser;
+      const matchPhone = u.phone && u.phone.trim() === cleanUser;
+      const matchName = u.name && u.name.toLowerCase() === cleanUser;
+      return matchUsername || matchPhone || matchName;
+    });
+
+    if (!target) {
+      return {
+        success: false,
+        message: 'اسم المستخدم غير مسجل بالنظام! يرجى التأكد وإعادة المحاولة.',
+      };
+    }
+
+    // Verify password against password or fallback pinCode
+    const validPassword = target.password || target.pinCode;
+    const isCorrect = validPassword === cleanPass || target.pinCode === cleanPass;
+
+    if (!isCorrect) {
+      return {
+        success: false,
+        message: 'كلمة المرور غير صحيحة! يرجى إعادة المحاولة.',
       };
     }
 
@@ -594,6 +644,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         isAuthenticated: !!currentUser,
         loginUser,
         loginByPin,
+        loginWithCredentials,
         logoutUser,
         switchUser,
         isAdmin: !!currentUser && currentUser.role === 'admin',

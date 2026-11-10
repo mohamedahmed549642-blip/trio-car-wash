@@ -1,56 +1,67 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Car,
-  KeyRound,
-  Shield,
   User,
-  AlertCircle,
+  Lock,
   Eye,
   EyeOff,
-  ArrowLeft,
+  AlertCircle,
+  LogIn,
+  Shield,
+  Briefcase,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const LoginPage: React.FC = () => {
-  const { users, loginByPin, settings } = useApp();
+  const { users, loginWithCredentials, settings } = useApp();
 
-  const [enteredCode, setEnteredCode] = useState('');
-  const [showCode, setShowCode] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const usernameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    if (usernameInputRef.current) {
+      usernameInputRef.current.focus();
     }
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!enteredCode.trim()) {
-      setErrorMessage('يرجى كتابة رمز الدخول (PIN / الكود).');
-      if (inputRef.current) inputRef.current.focus();
+    if (!username.trim()) {
+      setErrorMessage('يرجى إدخال اسم المستخدم.');
+      if (usernameInputRef.current) usernameInputRef.current.focus();
+      return;
+    }
+    if (!password.trim()) {
+      setErrorMessage('يرجى إدخال كلمة المرور.');
       return;
     }
 
     setErrorMessage('');
-    const res = loginByPin(enteredCode);
+    const res = loginWithCredentials(username, password);
     if (!res.success) {
-      setErrorMessage(res.message || 'رمز الدخول غير مطابق لأي حساب مسجل.');
-      setEnteredCode('');
-      if (inputRef.current) inputRef.current.focus();
+      setErrorMessage(res.message || 'بيانات الدخول غير صحيحة! يرجى إعادة المحاولة.');
     }
   };
 
-  const handleQuickFill = (code: string) => {
-    setEnteredCode(code);
+  const handleQuickDemo = (demoUser: string, demoPass: string) => {
+    setUsername(demoUser);
+    setPassword(demoPass);
     setErrorMessage('');
-    loginByPin(code);
+    loginWithCredentials(demoUser, demoPass);
   };
 
   const ownerUser = users.find((u) => u.role === 'admin');
   const workerUser = users.find((u) => u.role === 'cashier');
+
+  const ownerUsername = ownerUser?.username || 'owner';
+  const ownerPass = ownerUser?.password || ownerUser?.pinCode || '123';
+
+  const workerUsername = workerUser?.username || 'cashier';
+  const workerPass = workerUser?.password || workerUser?.pinCode || '123';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 flex flex-col justify-center items-center p-4 sm:p-6 text-slate-100 font-sans antialiased relative overflow-hidden">
@@ -69,23 +80,23 @@ export const LoginPage: React.FC = () => {
             {settings.shopName}
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 font-medium">
-            نظام إدارة المغسلة وتغيير الزيوت والمخزن
+            تسجيل الدخول للنظام • مغسلة وتغيير زيوت
           </p>
         </div>
 
-        {/* Main Card */}
+        {/* Main Login Card */}
         <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden text-slate-800 p-6 sm:p-8">
           {/* Header Title */}
           <div className="text-right mb-6 border-b border-slate-100 pb-4">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-black mb-2">
-              <KeyRound className="w-3.5 h-3.5" />
-              <span>تسجيل الدخول المباشر برمز الـ PIN</span>
+              <Lock className="w-3.5 h-3.5" />
+              <span>اسم المستخدم وكلمة المرور (Username & Password)</span>
             </div>
             <h2 className="text-xl font-black text-slate-900">
-              أهلاً بك، يرجى كتابة رمز الدخول
+              أهلاً بك، يرجى تسجيل الدخول
             </h2>
             <p className="text-slate-500 text-xs mt-1 leading-relaxed">
-              اكتب رمز الـ PIN أو الكود الخاص بك (مثال: <span className="font-mono font-bold text-slate-700">857487487</span> أو <span className="font-mono font-bold text-slate-700">1234</span>)، وسيقوم النظام بالتحقق منه ومطابقته بحسابك فوراً.
+              أدخل اسم المستخدم وكلمة المرور الخاصة بك للمتابعة:
             </p>
           </div>
 
@@ -97,97 +108,120 @@ export const LoginPage: React.FC = () => {
             </div>
           )}
 
-          {/* Written PIN Form */}
-          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4">
+            {/* Username Input */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-black text-slate-800 text-xs flex items-center gap-1.5">
-                  <KeyRound className="w-4 h-4 text-sky-600" />
-                  <span>رمز الدخول المكتوب (PIN):</span>
+              <label className="block font-bold text-slate-700 text-xs mb-1.5 flex items-center gap-1.5">
+                <User className="w-4 h-4 text-sky-600" />
+                <span>اسم المستخدم (Username):</span>
+              </label>
+              <div className="relative">
+                <input
+                  ref={usernameInputRef}
+                  type="text"
+                  required
+                  autoFocus
+                  name="auth_username"
+                  autoComplete="off"
+                  placeholder="مثال: owner أو cashier"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setErrorMessage('');
+                  }}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 font-bold text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none transition-all placeholder:text-slate-400 placeholder:font-normal"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="font-bold text-slate-700 text-xs flex items-center gap-1.5">
+                  <Lock className="w-4 h-4 text-sky-600" />
+                  <span>كلمة المرور (Password):</span>
                 </label>
                 <button
                   type="button"
-                  onClick={() => setShowCode(!showCode)}
+                  onClick={() => setShowPassword(!showPassword)}
                   className="text-slate-500 hover:text-slate-800 flex items-center gap-1 text-[11px] font-bold cursor-pointer transition-colors"
                 >
-                  {showCode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  <span>{showCode ? 'إخفاء الرمز' : 'إظهار الرمز'}</span>
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{showPassword ? 'إخفاء' : 'إظهار'}</span>
                 </button>
               </div>
 
               <div className="relative">
                 <input
-                  ref={inputRef}
-                  type={showCode ? 'text' : 'password'}
-                  name="auth_user_pin"
-                  autoComplete="off"
-                  autoFocus
+                  type={showPassword ? 'text' : 'password'}
                   required
-                  placeholder="اكتب رمزك هنا (مثال: 857487487)"
-                  value={enteredCode}
+                  name="auth_password"
+                  autoComplete="off"
+                  placeholder="••••••••"
+                  value={password}
                   onChange={(e) => {
-                    setEnteredCode(e.target.value);
+                    setPassword(e.target.value);
                     setErrorMessage('');
                   }}
-                  className="w-full bg-slate-50 border-2 border-slate-300 rounded-2xl py-3.5 px-4 text-center font-mono font-black text-xl text-slate-900 tracking-wider focus:border-sky-500 focus:ring-4 focus:ring-sky-500/15 focus:outline-none transition-all placeholder:text-slate-400 placeholder:text-sm placeholder:font-normal placeholder:tracking-normal"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 font-bold text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none transition-all placeholder:text-slate-400 placeholder:font-normal"
                 />
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-black text-sm shadow-xl shadow-sky-600/25 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full mt-2 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white font-black text-sm shadow-xl shadow-sky-600/25 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <span>تسجيل الدخول والمطابقة</span>
-              <ArrowLeft className="w-4 h-4" />
+              <LogIn className="w-4 h-4" />
+              <span>تسجيل الدخول</span>
             </button>
           </form>
 
-          {/* Quick Demo Access Helpers */}
+          {/* Quick Demo Credentials */}
           <div className="mt-6 pt-5 border-t border-slate-100 text-xs">
-            <span className="text-[11px] font-bold text-slate-400 block mb-2.5 text-center">
-              أكواد تجريبية جاهزة للمعاينة السريعة:
+            <span className="text-[11px] font-bold text-slate-400 block mb-2 text-center">
+              حسابات تجريبية للمعاينة بضغطة زر واحدة:
             </span>
-            <div className="grid grid-cols-2 gap-2 font-mono">
-              {ownerUser && (
-                <button
-                  type="button"
-                  onClick={() => handleQuickFill(ownerUser.pinCode)}
-                  className="p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-900 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5"
-                >
-                  <span className="text-[10px] font-bold font-sans text-purple-700 flex items-center gap-1">
-                    <Shield className="w-3 h-3 text-purple-600" />
-                    <span>المالك 👑</span>
-                  </span>
-                  <span className="font-bold text-sm text-purple-950 tracking-wider">
-                    {ownerUser.pinCode}
-                  </span>
-                </button>
-              )}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickDemo(ownerUsername, ownerPass)}
+                className="p-3 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-right transition-all cursor-pointer flex flex-col justify-between"
+              >
+                <div className="flex items-center gap-1 text-purple-900 font-black text-xs mb-1">
+                  <Shield className="w-3.5 h-3.5 text-purple-600" />
+                  <span>دخول المالك 👑</span>
+                </div>
+                <div className="text-[11px] text-purple-800 font-mono space-y-0.5">
+                  <p>المستخدم: <strong>{ownerUsername}</strong></p>
+                  <p>الباسورد: <strong>{ownerPass}</strong></p>
+                </div>
+              </button>
 
-              {workerUser && (
-                <button
-                  type="button"
-                  onClick={() => handleQuickFill(workerUser.pinCode)}
-                  className="p-2.5 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-900 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5"
-                >
-                  <span className="text-[10px] font-bold font-sans text-sky-700 flex items-center gap-1">
-                    <User className="w-3 h-3 text-sky-600" />
-                    <span>الكاشير 👷</span>
-                  </span>
-                  <span className="font-bold text-sm text-sky-950 tracking-wider">
-                    {workerUser.pinCode}
-                  </span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => handleQuickDemo(workerUsername, workerPass)}
+                className="p-3 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-right transition-all cursor-pointer flex flex-col justify-between"
+              >
+                <div className="flex items-center gap-1 text-sky-900 font-black text-xs mb-1">
+                  <Briefcase className="w-3.5 h-3.5 text-sky-600" />
+                  <span>دخول الكاشير 👷</span>
+                </div>
+                <div className="text-[11px] text-sky-800 font-mono space-y-0.5">
+                  <p>المستخدم: <strong>{workerUsername}</strong></p>
+                  <p>الباسورد: <strong>{workerPass}</strong></p>
+                </div>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Footer Security Note */}
+        {/* Footer Note */}
         <div className="text-center mt-5 text-xs text-slate-400 flex items-center justify-center gap-1.5">
           <Shield className="w-3.5 h-3.5 text-slate-500" />
-          <span>تحديد الصلاحيات تلقائياً حسب الرمز المطابق</span>
+          <span>المالك يتحكم بإضافة وحذف حسابات العمال وتعيين كلمات المرور</span>
         </div>
       </div>
     </div>
