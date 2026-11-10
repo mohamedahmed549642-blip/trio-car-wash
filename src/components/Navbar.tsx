@@ -14,6 +14,7 @@ import {
   Lock,
   Unlock,
   Users,
+  LogOut,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -36,6 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
     isCloudConnected,
     isDeveloperUnlocked,
     logoutDeveloper,
+    logoutUser,
   } = useApp();
 
   return (
@@ -80,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           </div>
         </div>
 
-        {/* User Role Switcher & Developer Status */}
+        {/* User Role & Logout */}
         <div className="flex items-center gap-2">
           {isDeveloperUnlocked && (
             <div className="flex items-center gap-1.5 bg-purple-500/20 border border-purple-500/40 text-purple-300 px-2 py-0.5 rounded-lg text-xs font-bold">
@@ -96,21 +98,24 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1">
             <User className="w-3.5 h-3.5 text-sky-400" />
-            <span className="text-slate-400">المستخدم:</span>
-            <select
-              value={activeUser.id}
-              onChange={(e) => switchUser(e.target.value)}
-              className="bg-transparent text-white font-bold text-xs focus:outline-none cursor-pointer"
-            >
-              {users.map((u) => (
-                <option key={u.id} value={u.id} className="bg-slate-900 text-white">
-                  {u.name} ({u.role === 'admin' ? 'مدير' : 'كاشير'})
-                </option>
-              ))}
-            </select>
+            <span className="font-bold text-white text-xs">
+              {activeUser.name}
+            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-800 text-slate-300 border border-slate-700">
+              {isAdmin ? 'المالك 👑' : 'كاشير 👷'}
+            </span>
           </div>
+
+          <button
+            onClick={() => logoutUser()}
+            className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-lg text-xs font-bold transition-all cursor-pointer active:scale-95"
+            title="تسجيل الخروج والعودة لشاشة الدخول"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">تسجيل خروج</span>
+          </button>
         </div>
       </div>
 

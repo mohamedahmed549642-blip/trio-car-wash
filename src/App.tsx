@@ -10,11 +10,12 @@ import { OrdersList } from './components/Orders/OrdersList';
 import { ReportsDashboard } from './components/Analytics/ReportsDashboard';
 import { WorkersManager } from './components/Workers/WorkersManager';
 import { SettingsView } from './components/Settings/SettingsView';
+import { LoginPage } from './components/Auth/LoginPage';
 import { ServiceOrder } from './types';
 import { Car, Heart } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
-  const { settings, currentShift, lowStockItems } = useApp();
+  const { settings, isAuthenticated } = useApp();
 
   const [activeTab, setActiveTab] = useState<TabType>('pos');
   const [isNewOrderOpen, setIsNewOrderOpen] = useState(false);
@@ -23,6 +24,11 @@ const MainAppContent: React.FC = () => {
   const handleOrderCreated = (order: ServiceOrder) => {
     setJustCreatedOrder(order);
   };
+
+  // If user is not authenticated, show dedicated Login Page
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-800 antialiased selection:bg-sky-500 selection:text-white">

@@ -44,8 +44,12 @@ interface AppContextType {
   addExpense: (category: Expense['category'], amount: number, description: string) => Promise<Expense>;
 
   // Auth & Roles
+  currentUser: UserProfile | null;
   activeUser: UserProfile;
   users: UserProfile[];
+  isAuthenticated: boolean;
+  loginUser: (userId: string, pin: string) => { success: boolean; message?: string };
+  logoutUser: () => void;
   switchUser: (userId: string) => void;
   isAdmin: boolean;
   addUser: (userData: Omit<UserProfile, 'id'>) => Promise<UserProfile>;
@@ -76,7 +80,38 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [expenses, setExpenses] = useState<Expense[]>(() => storage.getExpenses());
   const [settings, setSettings] = useState<ShopSettings>(() => storage.getSettings());
   const [users, setUsers] = useState<UserProfile[]>(() => storage.getUsers());
-  const [activeUser, setActiveUser] = useState<UserProfile>(() => storage.getActiveUser());
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    const savedId = sessionStorage.getItem('trio_auth_user_id');
+    if (savedId) {
+      const allUsers = storage.getUsers();
+      const found = allUsers.find((u) => u.id === savedId);
+      if (found) return found;
+    }
+    return null;
+  });
+
+  const activeUser = currentUser || users[0];
+
+  const loginUser = (userId: string, pin: string): { success: boolean; message?: string } => {
+    const target = users.find((u) => u.id === userId);
+    if (!target) {
+      return { success: false, message: 'المستخدم غير مسجل بالنظام.' };
+    }
+    if (target.pinCode !== pin.trim()) {
+      return { success: false, message: 'رمز الدخول (PIN) غير صحيح! يرجى التأكد وإعادة المحاولة.' };
+    }
+    setCurrentUser(target);
+    sessionStorage.setItem('trio_auth_user_id', target.id);
+    storage.saveActiveUser(target);
+    return { success: true };
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    sessionStorage.removeItem('trio_auth_user_id');
+    setIsDeveloperUnlocked(false);
+    sessionStorage.removeItem('trio_dev_unlocked');
+  };
   const [isCloudConnected, setIsCloudConnected] = useState<boolean>(false);
   const [isDeveloperUnlocked, setIsDeveloperUnlocked] = useState<boolean>(() => {
     return sessionStorage.getItem('trio_dev_unlocked') === 'true';
@@ -454,7 +489,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const switchUser = (userId: string) => {
     const target = users.find((u) => u.id === userId);
     if (target) {
-      setActiveUser(target);
+      setCurrentUser(target);
+      sessionStorage.setItem('trio_auth_user_id', target.id);
       storage.saveActiveUser(target);
     }
   };
@@ -475,8 +511,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const updated = users.map((u) => (u.id === user.id ? user : u));
     setUsers(updated);
     await storage.saveUsers(updated);
-    if (activeUser.id === user.id) {
-      setActiveUser(user);
+    if (currentUser?.id === user.id) {
+      setCurrentUser(user);
       storage.saveActiveUser(user);
     }
   };
@@ -490,8 +526,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const updated = users.filter((u) => u.id !== userId);
     setUsers(updated);
     await storage.saveUsers(updated);
-    if (activeUser.id === userId && updated.length > 0) {
-      setActiveUser(updated[0]);
+    if (currentUser?.id === userId && updated.length > 0) {
+      setCurrentUser(updated[0]);
       storage.saveActiveUser(updated[0]);
     }
     return true;
@@ -525,10 +561,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         closeShift,
         expenses,
         addExpense,
+        currentUser,
         activeUser,
         users,
+        isAuthenticated: !!currentUser,
+        loginUser,
+        logoutUser,
         switchUser,
-        isAdmin: activeUser.role === 'admin',
+        isAdmin: !!currentUser && currentUser.role === 'admin',
         addUser,
         updateUser,
         deleteUser,
