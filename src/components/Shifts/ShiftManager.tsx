@@ -13,12 +13,13 @@ import {
   User,
   ShieldCheck,
   X,
+  Trash2,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ExpenseModal } from './ExpenseModal';
 
 export const ShiftManager: React.FC = () => {
-  const { currentShift, openShift, closeShift, shifts, expenses, activeUser } = useApp();
+  const { currentShift, openShift, closeShift, deleteShift, shifts, expenses, activeUser } = useApp();
 
   const [openingBalance, setOpeningBalance] = useState<number>(200); // 200 EGP standard change
   const [actualCash, setActualCash] = useState<number>(0);
@@ -55,6 +56,40 @@ export const ShiftManager: React.FC = () => {
       alert('حدث خطأ أثناء تقفيل الوردية.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Handle Delete Active Shift
+  const handleDeleteCurrentShift = async () => {
+    if (!currentShift) return;
+    if (
+      window.confirm(
+        `هل أنت متأكد من رغبتك في حذف ${currentShift.shiftNumber} المفتوحة حالياً؟\nسيتم إلغاء الوردية بالكامل وإعادة حالة الخزينة للوضع الابتدائي.`
+      )
+    ) {
+      setIsSubmitting(true);
+      try {
+        await deleteShift(currentShift.id);
+        alert('تم حذف الوردية بنجاح!');
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء حذف الوردية.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
+  // Handle Delete Historical Shift from Archive
+  const handleDeleteClosedShift = async (shiftId: string, shiftNumber: string) => {
+    if (window.confirm(`هل أنت متأكد من حذف سجل ${shiftNumber} نهائياً من الأرشيف؟`)) {
+      try {
+        await deleteShift(shiftId);
+        alert('تم حذف سجل الوردية بنجاح!');
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء حذف الوردية.');
+      }
     }
   };
 
@@ -138,6 +173,7 @@ export const ShiftManager: React.FC = () => {
             {/* Quick Actions */}
             <div className="flex flex-wrap items-center gap-2">
               <button
+                type="button"
                 onClick={() => setIsExpenseModalOpen(true)}
                 className="inline-flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer"
               >
@@ -146,6 +182,7 @@ export const ShiftManager: React.FC = () => {
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   setActualCash(currentShift.expectedCash);
                   setIsCloseModalOpen(true);
@@ -154,6 +191,16 @@ export const ShiftManager: React.FC = () => {
               >
                 <Lock className="w-4 h-4" />
                 <span>تقفيل الوردية ومطابقة الخزينة 🔒</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDeleteCurrentShift}
+                className="inline-flex items-center gap-1.5 bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 font-bold text-xs py-2.5 px-3.5 rounded-xl transition-all cursor-pointer"
+                title="حذف أو إلغاء الوردية المفتوحة حالياً"
+              >
+                <Trash2 className="w-4 h-4 text-rose-400" />
+                <span>حذف الوردية 🗑️</span>
               </button>
             </div>
           </div>
@@ -394,6 +441,7 @@ export const ShiftManager: React.FC = () => {
                 <th className="py-2.5 px-3 text-left">المصروفات</th>
                 <th className="py-2.5 px-3 text-left">الكاش الفعلي بالدرج</th>
                 <th className="py-2.5 px-3 text-center">مطابقة الدرج</th>
+                <th className="py-2.5 px-3 text-center">إجراءات</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -437,6 +485,16 @@ export const ShiftManager: React.FC = () => {
                           عجز {s.difference} ج.م
                         </span>
                       )}
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteClosedShift(s.id, s.shiftNumber)}
+                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="حذف هذا السجل من الأرشيف"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))}

@@ -40,6 +40,7 @@ interface AppContextType {
   currentShift: Shift | null;
   openShift: (openingBalance: number) => Promise<Shift>;
   closeShift: (actualCash: number, notes?: string) => Promise<Shift | null>;
+  deleteShift: (shiftId: string) => Promise<boolean>;
   expenses: Expense[];
   addExpense: (category: Expense['category'], amount: number, description: string) => Promise<Expense>;
 
@@ -375,6 +376,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return updatedShift;
   };
 
+  const deleteShift = async (shiftId: string): Promise<boolean> => {
+    const updated = shifts.filter((s) => s.id !== shiftId);
+    setShifts(updated);
+    await storage.saveShifts(updated);
+    return true;
+  };
+
   // --- Expenses Actions ---
   const addExpense = async (
     category: Expense['category'],
@@ -450,6 +458,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         currentShift,
         openShift,
         closeShift,
+        deleteShift,
         expenses,
         addExpense,
         activeUser,
