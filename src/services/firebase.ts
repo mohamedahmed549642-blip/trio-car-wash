@@ -16,6 +16,21 @@ export interface FirebaseClientConfig {
 }
 
 export const getSavedFirebaseConfig = (): FirebaseClientConfig | null => {
+  // 1. Check Vite Environment Variables (ideal for Vercel deployment)
+  const envApiKey = (import.meta as any).env?.VITE_FIREBASE_API_KEY;
+  const envProjectId = (import.meta as any).env?.VITE_FIREBASE_PROJECT_ID;
+  if (envApiKey && envProjectId) {
+    return {
+      apiKey: envApiKey,
+      authDomain: (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN || `${envProjectId}.firebaseapp.com`,
+      projectId: envProjectId,
+      storageBucket: (import.meta as any).env?.VITE_FIREBASE_STORAGE_BUCKET || `${envProjectId}.appspot.com`,
+      messagingSenderId: (import.meta as any).env?.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+      appId: (import.meta as any).env?.VITE_FIREBASE_APP_ID || '',
+    };
+  }
+
+  // 2. Check localStorage saved config (configured via Settings UI)
   try {
     const raw = localStorage.getItem('trio_firebase_config');
     if (raw) {

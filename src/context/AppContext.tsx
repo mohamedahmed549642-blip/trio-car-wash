@@ -221,11 +221,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     const { isConnected } = initFirebase();
     setIsCloudConnected(isConnected);
+    if (isConnected) {
+      storage.syncFromFirebase().then((res) => {
+        if (res.success) {
+          if (res.inventory && res.inventory.length > 0) setInventory(res.inventory);
+          if (res.orders && res.orders.length > 0) setOrders(res.orders);
+          if (res.shifts && res.shifts.length > 0) setShifts(res.shifts);
+        }
+      });
+    }
   }, []);
 
   const reconnectCloud = () => {
     const { isConnected } = initFirebase();
     setIsCloudConnected(isConnected);
+    if (isConnected) {
+      storage.syncFromFirebase().then((res) => {
+        if (res.success) {
+          if (res.inventory && res.inventory.length > 0) setInventory(res.inventory);
+          if (res.orders && res.orders.length > 0) setOrders(res.orders);
+          if (res.shifts && res.shifts.length > 0) setShifts(res.shifts);
+        }
+      });
+    }
   };
 
   // Find active open shift

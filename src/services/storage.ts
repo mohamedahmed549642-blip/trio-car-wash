@@ -266,28 +266,52 @@ export const storage = {
   },
 
   // Pull all data from Cloud Firestore
-  syncFromFirebase: async (): Promise<{ success: boolean; message: string }> => {
+  syncFromFirebase: async (): Promise<{
+    success: boolean;
+    message: string;
+    inventory?: InventoryItem[];
+    orders?: ServiceOrder[];
+    shifts?: Shift[];
+  }> => {
     const db = getFirebaseDb();
     if (!db) {
       return { success: false, message: 'قاعدة بيانات Firebase غير متصلة.' };
     }
 
     try {
+      let loadedInv: InventoryItem[] | undefined;
       const invSnap = await getDocs(collection(db, 'inventory'));
       if (!invSnap.empty) {
-        const loadedInv: InventoryItem[] = [];
-        invSnap.forEach((d) => loadedInv.push(d.data() as InventoryItem));
+        loadedInv = [];
+        invSnap.forEach((d) => loadedInv!.push(d.data() as InventoryItem));
         localStorage.setItem(KEYS.INVENTORY, JSON.stringify(loadedInv));
       }
 
+      let loadedOrd: ServiceOrder[] | undefined;
       const ordSnap = await getDocs(collection(db, 'orders'));
       if (!ordSnap.empty) {
-        const loadedOrd: ServiceOrder[] = [];
-        ordSnap.forEach((d) => loadedOrd.push(d.data() as ServiceOrder));
+        loadedOrd = [];
+        ordSnap.forEach((d) => loadedOrd!.push(d.data() as ServiceOrder));
+        loadedOrd.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         localStorage.setItem(KEYS.ORDERS, JSON.stringify(loadedOrd));
       }
 
-      return { success: true, message: 'تمت مزامنة البيانات السحابية بنجاح!' };
+      let loadedShifts: Shift[] | undefined;
+      const shiftSnap = await getDocs(collection(db, 'shifts'));
+      if (!shiftSnap.empty) {
+        loadedShifts = [];
+        shiftSnap.forEach((d) => loadedShifts!.push(d.data() as Shift));
+        loadedShifts.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+        localStorage.setItem(KEYS.SHIFTS, JSON.stringify(loadedShifts));
+      }
+
+      return {
+        success: true,
+        message: 'تمت مزامنة البيانات السحابية بنجاح!',
+        inventory: loadedInv,
+        orders: loadedOrd,
+        shifts: loadedShifts,
+      };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       return { success: false, message: `فشلت المزامنة: ${msg}` };
