@@ -77,11 +77,10 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
           </button>
         </div>
 
-        {/* Action Buttons bar (hidden in print) */}
+        {/* Action Buttons bar (WhatsApp, Copy Text, Print) - TEMPORARILY COMMENTED per user request to be put again later */}
+        {/* 
         <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-2.5 print:hidden">
           <div className="flex flex-wrap gap-2">
-            {/* WhatsApp sending temporarily commented per user request */}
-            {/* 
             <button
               onClick={handleSendWhatsApp}
               className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
@@ -89,9 +88,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
               <Share2 className="w-4 h-4" />
               <span>إرسال واتساب للعميل 📱</span>
             </button>
-            */}
 
-            {/* <button
+            <button
               onClick={handleCopyMessage}
               className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-slate-300 active:scale-95 transition-all cursor-pointer"
               title="نسخ نص الفاتورة بالكامل للصقه يدوياً في أي محادثة"
@@ -106,11 +104,9 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
             >
               <Printer className="w-4 h-4" />
               <span>طباعة 🖨️</span>
-            </button> */}
+            </button>
           </div>
 
-          {/* WhatsApp web pairing code explanation note temporarily commented per user request */}
-          {/* 
           <div className="text-[11px] text-slate-600 bg-amber-50 p-3 rounded-xl border border-amber-200 leading-relaxed text-right flex items-start gap-2.5">
             <MessageSquare className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
@@ -125,8 +121,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
               </span>
             </div>
           </div>
-          */}
         </div>
+        */}
 
         {/* Thermal Receipt Content */}
         <div id="receipt-print-area" className="p-6 text-slate-800 font-sans text-sm">
