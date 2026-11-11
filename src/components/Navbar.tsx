@@ -47,29 +47,26 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
       {/* Top micro bar for status & user switcher */}
       <div className="bg-slate-950 px-4 py-1.5 border-b border-slate-800/80 text-xs flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          {/* Cloud Status */}
-          <div className="flex items-center gap-1.5 font-medium">
-            {isCloudConnected ? (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                <Cloud className="w-3.5 h-3.5" />
-                <span>سحابي متصل (Firebase)</span>
-              </span>
-            ) : isDev ? (
-              <button
-                onClick={() => setActiveTab('settings')}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition-colors cursor-pointer"
-                title="اضغط هنا لربط Firebase ومزامنة البيانات عبر الإنترنت"
-              >
-                <CloudOff className="w-3.5 h-3.5" />
-                <span>وضع محلي (اضغط للربط السحابي ☁️)</span>
-              </button>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                <CloudOff className="w-3.5 h-3.5" />
-                <span>وضع محلي (غير مربوط بالسحابة)</span>
-              </span>
-            )}
-          </div>
+          {/* Cloud Status (Visible to Developer Only) */}
+          {isDev && (
+            <div className="flex items-center gap-1.5 font-medium">
+              {isCloudConnected ? (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <Cloud className="w-3.5 h-3.5" />
+                  <span>سحابي متصل (Firebase)</span>
+                </span>
+              ) : (
+                <button
+                  onClick={() => setActiveTab('settings')}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition-colors cursor-pointer"
+                  title="اضغط هنا لربط Firebase ومزامنة البيانات عبر الإنترنت"
+                >
+                  <CloudOff className="w-3.5 h-3.5" />
+                  <span>وضع محلي (اضغط للربط السحابي ☁️)</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Shift status indicator */}
           <div className="hidden sm:flex items-center gap-1.5">
