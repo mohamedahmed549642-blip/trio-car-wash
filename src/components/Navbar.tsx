@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-black text-lg sm:text-xl tracking-tight text-white">
-                  تريو كار ووش
+                  Trio Car Wash
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
