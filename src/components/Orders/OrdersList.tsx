@@ -198,6 +198,8 @@ export const OrdersList: React.FC = () => {
                             <Printer className="w-4 h-4" />
                           </button>
 
+                          {/* WhatsApp sending temporarily commented per user request */}
+                          {/* 
                           <button
                             onClick={() => handleSendOrderWhatsApp(ord)}
                             className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-colors cursor-pointer"
@@ -205,6 +207,7 @@ export const OrdersList: React.FC = () => {
                           >
                             <Share2 className="w-4 h-4" />
                           </button>
+                          */}
                         </div>
                       </td>
                     </tr>
@@ -274,6 +277,8 @@ export const OrdersList: React.FC = () => {
                   </div>
                 </div>
 
+                {/* WhatsApp reminder button temporarily commented per user request */}
+                {/* 
                 <button
                   onClick={() => handleSendReminderWhatsApp(ord)}
                   className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
@@ -281,6 +286,7 @@ export const OrdersList: React.FC = () => {
                   <Share2 className="w-4 h-4" />
                   <span>إرسال تذكير واتساب مباشر 📱</span>
                 </button>
+                */}
               </div>
             ))}
           </div>
