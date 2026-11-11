@@ -109,6 +109,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
             </button>
           </div>
 
+          {/* WhatsApp web pairing code explanation note temporarily commented per user request */}
+          {/* 
           <div className="text-[11px] text-slate-600 bg-amber-50 p-3 rounded-xl border border-amber-200 leading-relaxed text-right flex items-start gap-2.5">
             <MessageSquare className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
@@ -123,6 +125,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
               </span>
             </div>
           </div>
+          */}
         </div>
 
         {/* Thermal Receipt Content */}

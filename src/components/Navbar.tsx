@@ -40,6 +40,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
     logoutUser,
   } = useApp();
 
+  const isDev = isDeveloperUnlocked || activeUser.role === 'developer' || activeUser.username === 'developer';
+
   return (
     <header className="bg-slate-900 text-white sticky top-0 z-40 shadow-xl border-b border-slate-800">
       {/* Top micro bar for status & user switcher */}
@@ -52,15 +54,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 <Cloud className="w-3.5 h-3.5" />
                 <span>سحابي متصل (Firebase)</span>
               </span>
-            ) : (
+            ) : isDev ? (
               <button
                 onClick={() => setActiveTab('settings')}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition-colors cursor-pointer"
                 title="اضغط هنا لربط Firebase ومزامنة البيانات عبر الإنترنت"
               >
                 <CloudOff className="w-3.5 h-3.5" />
                 <span>وضع محلي (اضغط للربط السحابي ☁️)</span>
               </button>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                <CloudOff className="w-3.5 h-3.5" />
+                <span>وضع محلي (غير مربوط بالسحابة)</span>
+              </span>
             )}
           </div>
 
@@ -229,17 +236,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               </button>
             )}
 
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                activeTab === 'settings'
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              {isDeveloperUnlocked ? <Unlock className="w-4 h-4 text-emerald-400" /> : <Lock className="w-4 h-4 text-amber-400" />}
-              <span>الإعدادات {isDeveloperUnlocked ? '🔓' : '🔒'}</span>
-            </button>
+            {isDev && (
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'settings'
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Unlock className="w-4 h-4 text-emerald-400" />
+                <span>الإعدادات 🔓</span>
+              </button>
+            )}
           </nav>
 
           {/* Quick Action Button */}
@@ -318,15 +327,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               <span>العمال</span>
             </button>
           )}
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-              activeTab === 'settings' ? 'text-sky-400 font-bold' : 'text-slate-400'
-            }`}
-          >
-            {isDeveloperUnlocked ? <Unlock className="w-4 h-4 text-emerald-400" /> : <Lock className="w-4 h-4 text-amber-400" />}
-            <span>الإعدادات {isDeveloperUnlocked ? '🔓' : '🔒'}</span>
-          </button>
+          {isDev && (
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
+                activeTab === 'settings' ? 'text-sky-400 font-bold' : 'text-slate-400'
+              }`}
+            >
+              <Unlock className="w-4 h-4 text-emerald-400" />
+              <span>الإعدادات 🔓</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

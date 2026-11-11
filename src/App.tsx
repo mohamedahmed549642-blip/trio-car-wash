@@ -15,7 +15,8 @@ import { ServiceOrder } from './types';
 import { Car, Heart } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
-  const { settings, isAuthenticated } = useApp();
+  const { settings, isAuthenticated, activeUser, isDeveloperUnlocked } = useApp();
+  const isDev = isDeveloperUnlocked || activeUser.role === 'developer' || activeUser.username === 'developer';
 
   const [activeTab, setActiveTab] = useState<TabType>('pos');
   const [isNewOrderOpen, setIsNewOrderOpen] = useState(false);
@@ -55,7 +56,7 @@ const MainAppContent: React.FC = () => {
 
         {activeTab === 'workers' && <WorkersManager />}
 
-        {activeTab === 'settings' && <SettingsView />}
+        {activeTab === 'settings' && isDev && <SettingsView />}
       </main>
 
       {/* Footer */}
