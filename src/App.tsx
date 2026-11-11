@@ -79,7 +79,7 @@ const MainAppContent: React.FC = () => {
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 print:hidden mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2 font-bold text-slate-700">
-            <Car className="w-4 h-4 text-sky-600" />
+            <img src="/logo.png" alt="Trio Logo" className="w-6 h-6 object-contain" />
             <span>{settings.shopName}</span>
             <span className="text-slate-400 font-normal">| {settings.slogan}</span>
           </div>

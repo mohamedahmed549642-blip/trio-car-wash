@@ -131,13 +131,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Name */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('pos')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-sky-500/20 text-white font-black text-xl">
-              <Car className="w-6 h-6" />
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('pos')}>
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-md shadow-sky-500/20 border border-slate-700/60 overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+              <img
+                src="/logo.png"
+                alt="Trio Car Wash Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-black text-lg sm:text-xl tracking-tight text-white">
+                <span className="font-black text-lg sm:text-xl tracking-tight text-white group-hover:text-sky-300 transition-colors">
                   Trio Car Wash
                 </span>
               </div>

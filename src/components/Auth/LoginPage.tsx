@@ -74,8 +74,12 @@ export const LoginPage: React.FC = () => {
       <div className="relative z-10 w-full max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-6 space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-cyan-400 text-white shadow-xl shadow-sky-500/25 mb-1 ring-4 ring-white/10">
-            <Car className="w-9 h-9" />
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white p-2 shadow-2xl shadow-sky-500/25 mb-1 ring-4 ring-white/10 overflow-hidden">
+            <img
+              src="/logo.png"
+              alt="Trio Car Wash Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             {settings.shopName}

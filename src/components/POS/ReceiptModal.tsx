@@ -128,6 +128,11 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
         <div id="receipt-print-area" className="p-6 text-slate-800 font-sans text-sm">
           {/* Header */}
           <div className="text-center pb-4 border-b border-dashed border-slate-300">
+            <img
+              src="/logo.png"
+              alt="Trio Car Wash"
+              className="w-24 h-auto mx-auto mb-2 object-contain"
+            />
             <h1 className="text-xl font-black tracking-tight text-slate-900">
               {settings.shopName}
             </h1>
