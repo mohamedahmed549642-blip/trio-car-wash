@@ -111,8 +111,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               {activeUser.username === 'developer' || activeUser.role === 'developer' || isDeveloperUnlocked
                 ? 'مطور النظام 💻'
                 : isAdmin
-                ? 'المالك 👑'
-                : 'كاشير 👷'}
+                  ? 'المالك 👑'
+                  : 'كاشير 👷'}
             </span>
           </div>
 
@@ -145,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                مغسلة وغيار زيوت سيارات • إدارة المخزون السحابي
+                مغسلة وغيار زيوت سيارات
               </p>
             </div>
           </div>
@@ -154,11 +154,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => setActiveTab('pos')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                activeTab === 'pos'
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'pos'
                   ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
+                }`}
             >
               <Car className="w-4 h-4" />
               <span>أمر تشغيل وكاشير</span>
@@ -166,11 +165,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
 
             <button
               onClick={() => setActiveTab('inventory')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all relative ${
-                activeTab === 'inventory'
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all relative ${activeTab === 'inventory'
                   ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
+                }`}
             >
               <Package className="w-4 h-4" />
               <span>المخزن والزيوت</span>
@@ -183,11 +181,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
 
             <button
               onClick={() => setActiveTab('shifts')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                activeTab === 'shifts'
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'shifts'
                   ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
+                }`}
             >
               <CircleDollarSign className="w-4 h-4" />
               <span>الوردية والخزينة</span>
@@ -195,11 +192,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
 
             <button
               onClick={() => setActiveTab('orders')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                activeTab === 'orders'
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'orders'
                   ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
+                }`}
             >
               <FileText className="w-4 h-4" />
               <span>الفواتير والعملاء</span>
@@ -208,11 +204,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             {isAdmin && (
               <button
                 onClick={() => setActiveTab('reports')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === 'reports'
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'reports'
                     ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                     : 'text-slate-300 hover:text-white hover:bg-slate-800'
-                }`}
+                  }`}
               >
                 <BarChart3 className="w-4 h-4" />
                 <span>الأرباح والتقارير</span>
@@ -222,11 +217,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             {isAdmin && (
               <button
                 onClick={() => setActiveTab('workers')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === 'workers'
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'workers'
                     ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                     : 'text-slate-300 hover:text-white hover:bg-slate-800'
-                }`}
+                  }`}
               >
                 <Users className="w-4 h-4" />
                 <span>العمال والفريق</span>
@@ -236,11 +230,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             {isDev && (
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === 'settings'
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'settings'
                     ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
                     : 'text-slate-300 hover:text-white hover:bg-slate-800'
-                }`}
+                  }`}
               >
                 <Unlock className="w-4 h-4 text-emerald-400" />
                 <span>الإعدادات 🔓</span>
@@ -265,18 +258,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
         <div className="md:hidden flex items-center justify-between py-2 border-t border-slate-800 overflow-x-auto gap-1 text-xs">
           <button
             onClick={() => setActiveTab('pos')}
-            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-              activeTab === 'pos' ? 'text-sky-400 font-bold' : 'text-slate-400'
-            }`}
+            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'pos' ? 'text-sky-400 font-bold' : 'text-slate-400'
+              }`}
           >
             <Car className="w-4 h-4" />
             <span>كاشير</span>
           </button>
           <button
             onClick={() => setActiveTab('inventory')}
-            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap relative ${
-              activeTab === 'inventory' ? 'text-sky-400 font-bold' : 'text-slate-400'
-            }`}
+            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap relative ${activeTab === 'inventory' ? 'text-sky-400 font-bold' : 'text-slate-400'
+              }`}
           >
             <Package className="w-4 h-4" />
             <span>المخزن</span>
@@ -286,18 +277,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           </button>
           <button
             onClick={() => setActiveTab('shifts')}
-            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-              activeTab === 'shifts' ? 'text-sky-400 font-bold' : 'text-slate-400'
-            }`}
+            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'shifts' ? 'text-sky-400 font-bold' : 'text-slate-400'
+              }`}
           >
             <CircleDollarSign className="w-4 h-4" />
             <span>الوردية</span>
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-              activeTab === 'orders' ? 'text-sky-400 font-bold' : 'text-slate-400'
-            }`}
+            className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'orders' ? 'text-sky-400 font-bold' : 'text-slate-400'
+              }`}
           >
             <FileText className="w-4 h-4" />
             <span>الفواتير</span>
@@ -305,9 +294,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           {isAdmin && (
             <button
               onClick={() => setActiveTab('reports')}
-              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-                activeTab === 'reports' ? 'text-sky-400 font-bold' : 'text-slate-400'
-              }`}
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'reports' ? 'text-sky-400 font-bold' : 'text-slate-400'
+                }`}
             >
               <BarChart3 className="w-4 h-4" />
               <span>التقارير</span>
@@ -316,9 +304,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           {isAdmin && (
             <button
               onClick={() => setActiveTab('workers')}
-              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-                activeTab === 'workers' ? 'text-sky-400 font-bold' : 'text-slate-400'
-              }`}
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'workers' ? 'text-sky-400 font-bold' : 'text-slate-400'
+                }`}
             >
               <Users className="w-4 h-4" />
               <span>العمال</span>
@@ -327,9 +314,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
           {isDev && (
             <button
               onClick={() => setActiveTab('settings')}
-              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${
-                activeTab === 'settings' ? 'text-sky-400 font-bold' : 'text-slate-400'
-              }`}
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'settings' ? 'text-sky-400 font-bold' : 'text-slate-400'
+                }`}
             >
               <Unlock className="w-4 h-4 text-emerald-400" />
               <span>الإعدادات 🔓</span>
