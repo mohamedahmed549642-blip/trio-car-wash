@@ -11,11 +11,19 @@ import { ReportsDashboard } from './components/Analytics/ReportsDashboard';
 import { WorkersManager } from './components/Workers/WorkersManager';
 import { SettingsView } from './components/Settings/SettingsView';
 import { LoginPage } from './components/Auth/LoginPage';
+import { ToastContainer } from './components/UI/ToastContainer';
 import { ServiceOrder } from './types';
 import { Car, Heart } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
-  const { settings, isAuthenticated, activeUser, isDeveloperUnlocked } = useApp();
+  const {
+    settings,
+    isAuthenticated,
+    activeUser,
+    isDeveloperUnlocked,
+    toasts,
+    dismissToast,
+  } = useApp();
   const isDev = isDeveloperUnlocked || activeUser.role === 'developer' || activeUser.username === 'developer';
 
   const [activeTab, setActiveTab] = useState<TabType>('pos');
@@ -26,13 +34,21 @@ const MainAppContent: React.FC = () => {
     setJustCreatedOrder(order);
   };
 
-  // If user is not authenticated, show dedicated Login Page
+  // If user is not authenticated, show dedicated Login Page with global toasts available
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return (
+      <>
+        <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+        <LoginPage />
+      </>
+    );
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-800 antialiased selection:bg-sky-500 selection:text-white">
+      {/* Floating Animated Toast Container */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
       {/* Top Navigation */}
       <Navbar
         activeTab={activeTab}

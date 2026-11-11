@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import {
   InventoryItem,
   ServiceItem,
@@ -13,6 +13,7 @@ import {
 } from '../types';
 import { storage } from '../services/storage';
 import { initFirebase } from '../services/firebase';
+import { ToastType, ToastItem } from '../components/UI/ToastContainer';
 
 interface AppContextType {
   // Inventory
@@ -73,11 +74,81 @@ interface AppContextType {
   loginDeveloper: (password: string) => boolean;
   logoutDeveloper: () => void;
   updateDeveloperPassword: (newPass: string) => Promise<boolean>;
+
+  // Modern Toast Notifications
+  toasts: ToastItem[];
+  showToast: (message: string, type?: ToastType, title?: string, duration?: number) => void;
+  dismissToast: (id: string) => void;
+  notify: {
+    success: (message: string, title?: string) => void;
+    error: (message: string, title?: string) => void;
+    warning: (message: string, title?: string) => void;
+    info: (message: string, title?: string) => void;
+  };
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const showToast = useCallback(
+    (message: string, type: ToastType = 'info', title?: string, duration: number = 3800) => {
+      const id = 'toast_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+
+      let finalTitle = title;
+      if (!finalTitle) {
+        if (type === 'success') finalTitle = 'تمت العملية بنجاح ✨';
+        else if (type === 'error') finalTitle = 'تنبيه خطأ ⚠️';
+        else if (type === 'warning') finalTitle = 'ملاحظة هامة 🔔';
+        else finalTitle = 'إشعار النظام ℹ️';
+      }
+
+      const newToast: ToastItem = { id, message, title: finalTitle, type, duration };
+      setToasts((prev) => [...prev.slice(-3), newToast]);
+
+      setTimeout(() => {
+        dismissToast(id);
+      }, duration);
+    },
+    [dismissToast]
+  );
+
+  const notify = useMemo(
+    () => ({
+      success: (msg: string, title?: string) => showToast(msg, 'success', title),
+      error: (msg: string, title?: string) => showToast(msg, 'error', title),
+      warning: (msg: string, title?: string) => showToast(msg, 'warning', title),
+      info: (msg: string, title?: string) => showToast(msg, 'info', title),
+    }),
+    [showToast]
+  );
+
+  // Global browser alert interceptor so ANY alert call instantly turns into a gorgeous floating toast
+  useEffect(() => {
+    const originalAlert = window.alert;
+    window.alert = (msg: any) => {
+      const text = String(msg ?? '');
+      let inferredType: ToastType = 'info';
+      if (text.includes('نجاح') || text.includes('بنجاح') || text.includes('🎉') || text.includes('تم ')) {
+        inferredType = 'success';
+      } else if (text.includes('خطأ') || text.includes('تعذر') || text.includes('فشل') || text.includes('غير صحيح') || text.includes('لا يمكن')) {
+        inferredType = 'error';
+      } else if (text.includes('عذراً') || text.includes('يرجى') || text.includes('تنبيه') || text.includes('نفد') || text.includes('أكبر من')) {
+        inferredType = 'warning';
+      }
+      showToast(text, inferredType);
+    };
+
+    return () => {
+      window.alert = originalAlert;
+    };
+  }, [showToast]);
+
   const [inventory, setInventory] = useState<InventoryItem[]>(() => storage.getInventory());
   const [stockMovements, setStockMovements] = useState<StockMovement[]>(() => storage.getMovements());
   const [services, setServices] = useState<ServiceItem[]>(() => storage.getServices());
@@ -729,6 +800,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         loginDeveloper,
         logoutDeveloper,
         updateDeveloperPassword,
+        // Modern Toast Notifications
+        toasts,
+        showToast,
+        dismissToast,
+        notify,
       }}
     >
       {children}

@@ -39,14 +39,14 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
   // Orders matching quick plate search
   const displayedOrders = searchPlate.trim()
     ? orders.filter(
-        (o) =>
-          o.plateNumber.toLowerCase().includes(searchPlate.toLowerCase()) ||
-          o.carModel.toLowerCase().includes(searchPlate.toLowerCase()) ||
-          o.customerName.toLowerCase().includes(searchPlate.toLowerCase())
-      )
+      (o) =>
+        o.plateNumber.toLowerCase().includes(searchPlate.toLowerCase()) ||
+        o.carModel.toLowerCase().includes(searchPlate.toLowerCase()) ||
+        o.customerName.toLowerCase().includes(searchPlate.toLowerCase())
+    )
     : todayOrders.length > 0
-    ? todayOrders
-    : orders.slice(0, 10);
+      ? todayOrders
+      : orders.slice(0, 10);
 
   const handleSendWhatsApp = (order: ServiceOrder) => {
     if (!order.customerPhone) {
@@ -106,18 +106,17 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
               أوامر غسيل السيارات وتغيير الزيوت
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              سجل بيانات السيارة واللوحة، اختر باقة الغسيل والزيوت الأصلية، واحسب الفاتورة مع الخصم التلقائي من المخزن وإرسال رسالة الواتساب للعميل بضغطة زر واحدة.
+              سجل بيانات السيارة واللوحة، اختر باقة الغسيل والزيوت الأصلية، واحسب الفاتورة مع الخصم التلقائي من المخزن.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               onClick={onOpenNewOrder}
-              className={`py-4 px-6 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 ${
-                currentShift
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/30'
-                  : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-amber-500/30 ring-2 ring-amber-300'
-              }`}
+              className={`py-4 px-6 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 ${currentShift
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/30'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-amber-500/30 ring-2 ring-amber-300'
+                }`}
             >
               {currentShift ? (
                 <>
