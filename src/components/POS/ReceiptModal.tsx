@@ -100,13 +100,13 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
               <span>{copied ? 'تم النسخ! ✨' : 'نسخ النص 📋'}</span>
             </button>
 
-            <button
+            {/* <button
               onClick={handlePrint}
               className="inline-flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span>طباعة 🖨️</span>
-            </button>
+            </button> */}
           </div>
 
           {/* WhatsApp web pairing code explanation note temporarily commented per user request */}
