@@ -140,9 +140,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 <span className="font-black text-lg sm:text-xl tracking-tight text-white">
                   تريو كار ووش
                 </span>
-                <span className="text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                  Trio POS
-                </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
                 مغسلة وغيار زيوت سيارات
@@ -155,8 +152,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             <button
               onClick={() => setActiveTab('pos')}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'pos'
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
             >
               <Car className="w-4 h-4" />
@@ -166,8 +163,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             <button
               onClick={() => setActiveTab('inventory')}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all relative ${activeTab === 'inventory'
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
             >
               <Package className="w-4 h-4" />
@@ -182,8 +179,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             <button
               onClick={() => setActiveTab('shifts')}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'shifts'
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
             >
               <CircleDollarSign className="w-4 h-4" />
@@ -193,8 +190,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             <button
               onClick={() => setActiveTab('orders')}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'orders'
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800'
                 }`}
             >
               <FileText className="w-4 h-4" />
@@ -205,8 +202,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               <button
                 onClick={() => setActiveTab('reports')}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'reports'
-                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
               >
                 <BarChart3 className="w-4 h-4" />
@@ -218,8 +215,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               <button
                 onClick={() => setActiveTab('workers')}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'workers'
-                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
               >
                 <Users className="w-4 h-4" />
@@ -231,8 +228,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               <button
                 onClick={() => setActiveTab('settings')}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'settings'
-                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
                   }`}
               >
                 <Unlock className="w-4 h-4 text-emerald-400" />
