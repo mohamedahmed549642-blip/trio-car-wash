@@ -410,11 +410,13 @@ export const InventoryList: React.FC = () => {
 
       {/* Modals */}
       <RestockModal
+        key={`restock-${targetItem?.id || 'none'}-${isRestockOpen}`}
         isOpen={isRestockOpen}
         onClose={() => setIsRestockOpen(false)}
         preselectedItem={targetItem}
       />
       <ReduceStockModal
+        key={`reduce-${targetItem?.id || 'none'}-${isReduceOpen}`}
         isOpen={isReduceOpen}
         onClose={() => setIsReduceOpen(false)}
         preselectedItem={targetItem}

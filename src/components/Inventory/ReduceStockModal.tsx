@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, MinusCircle, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, MinusCircle, AlertTriangle, PackageCheck } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { InventoryItem, StockMovementType } from '../../types';
 
@@ -24,7 +24,21 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
   const [reason, setReason] = useState<string>('خصم يدوي من المخزن');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedItem = inventory.find((i) => i.id === selectedItemId);
+  // Synchronize selected item and fields whenever modal opens or preselectedItem changes
+  useEffect(() => {
+    if (isOpen) {
+      if (preselectedItem) {
+        setSelectedItemId(preselectedItem.id);
+      } else if (inventory.length > 0 && (!selectedItemId || !inventory.some((i) => i.id === selectedItemId))) {
+        setSelectedItemId(inventory[0].id);
+      }
+      setQuantity(1);
+      setMovementType('deduction');
+      setReason('خصم يدوي من المخزن');
+    }
+  }, [isOpen, preselectedItem, inventory]);
+
+  const selectedItem = inventory.find((i) => i.id === selectedItemId) || preselectedItem || inventory[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +86,18 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+          {preselectedItem && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-rose-600 block">الصنف المحدد للخصم:</span>
+                <span className="text-sm font-black text-rose-950 block">{selectedItem?.name}</span>
+              </div>
+              <span className="px-2.5 py-1 bg-white border border-rose-200 rounded-lg text-rose-800 font-bold text-xs">
+                الرصيد: {selectedItem?.stockQuantity} {selectedItem?.unit}
+              </span>
+            </div>
+          )}
+
           <div>
             <label className="block font-bold text-slate-700 mb-1">اختر الصنف المراد خصمه:</label>
             <select

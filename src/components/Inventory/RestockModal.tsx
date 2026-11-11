@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, PlusCircle, PackageCheck, AlertCircle } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { InventoryItem } from '../../types';
@@ -27,6 +27,22 @@ export const RestockModal: React.FC<RestockModalProps> = ({
   const [reason, setReason] = useState<string>('فاتورة توريد مشتريات جديدة');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Synchronize selected item and fields whenever modal opens or preselectedItem changes
+  useEffect(() => {
+    if (isOpen) {
+      if (preselectedItem) {
+        setSelectedItemId(preselectedItem.id);
+        setUnitCost(preselectedItem.costPrice);
+      } else if (inventory.length > 0 && (!selectedItemId || !inventory.some((i) => i.id === selectedItemId))) {
+        setSelectedItemId(inventory[0].id);
+        setUnitCost(inventory[0].costPrice);
+      }
+      setQuantity(10);
+      setSupplier('شركة التوزيع المعتمدة');
+      setReason('فاتورة توريد مشتريات جديدة');
+    }
+  }, [isOpen, preselectedItem, inventory]);
+
   // Update unitCost when selected item changes
   const handleItemSelect = (id: string) => {
     setSelectedItemId(id);
@@ -36,7 +52,7 @@ export const RestockModal: React.FC<RestockModalProps> = ({
     }
   };
 
-  const selectedItem = inventory.find((i) => i.id === selectedItemId);
+  const selectedItem = inventory.find((i) => i.id === selectedItemId) || preselectedItem || inventory[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +95,18 @@ export const RestockModal: React.FC<RestockModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+          {preselectedItem && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-emerald-600 block">الصنف المحدد للتوريد:</span>
+                <span className="text-sm font-black text-emerald-950 block">{selectedItem?.name}</span>
+              </div>
+              <span className="px-2.5 py-1 bg-white border border-emerald-200 rounded-lg text-emerald-800 font-bold text-xs">
+                الرصيد: {selectedItem?.stockQuantity} {selectedItem?.unit}
+              </span>
+            </div>
+          )}
+
           <div>
             <label className="block font-bold text-slate-700 mb-1">اختر الصنف المراد توريده:</label>
             <select
