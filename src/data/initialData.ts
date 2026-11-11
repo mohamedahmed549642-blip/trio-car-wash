@@ -24,6 +24,17 @@ export const INITIAL_USERS: UserProfile[] = [
     dailyWage: 250,
     createdAt: '2026-01-01T08:00:00.000Z',
   },
+  {
+    id: 'user_developer',
+    name: 'مطور النظام (Full Super-Admin)',
+    username: 'developer',
+    password: 'dev@trio2026',
+    role: 'developer',
+    pinCode: '9999',
+    phone: '01000000000',
+    jobTitle: 'مطور ومهندس النظام التقني',
+    createdAt: '2026-01-01T08:00:00.000Z',
+  },
 ];
 
 export const INITIAL_SETTINGS: ShopSettings = {

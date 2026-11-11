@@ -104,7 +104,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               {activeUser.name}
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-800 text-slate-300 border border-slate-700">
-              {isAdmin ? 'المالك 👑' : 'كاشير 👷'}
+              {activeUser.username === 'developer' || activeUser.role === 'developer' || isDeveloperUnlocked
+                ? 'مطور النظام 💻'
+                : isAdmin
+                ? 'المالك 👑'
+                : 'كاشير 👷'}
             </span>
           </div>
 

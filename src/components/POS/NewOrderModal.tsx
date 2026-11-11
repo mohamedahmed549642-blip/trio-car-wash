@@ -374,7 +374,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
               <div className="bg-white p-3 rounded-xl border border-slate-200 text-xs flex justify-between items-center">
                 <span className="text-slate-500 font-medium">الكاشير المستلم:</span>
                 <span className="font-bold text-slate-800">
-                  {activeUser.name} ({activeUser.role === 'admin' ? 'المالك 👑' : 'كاشير 👷'})
+                  {activeUser.name} ({activeUser.role === 'developer' || activeUser.username === 'developer' ? 'مطور النظام 💻' : activeUser.role === 'admin' ? 'المالك 👑' : 'كاشير 👷'})
                 </span>
               </div>
 

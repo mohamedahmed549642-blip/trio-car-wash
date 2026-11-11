@@ -15,6 +15,7 @@ import {
   Eye,
   EyeOff,
   UserCheck,
+  Code2,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { UserProfile, UserRole } from '../../types';
@@ -284,7 +285,12 @@ export const WorkersManager: React.FC = () => {
 
                     {/* Role Badge */}
                     <td className="py-3 px-4 text-center">
-                      {isOwner ? (
+                      {u.role === 'developer' || u.username === 'developer' ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-cyan-100 text-cyan-800 font-black text-[11px]">
+                          <Code2 className="w-3 h-3 text-cyan-600" />
+                          مطور النظام 💻
+                        </span>
+                      ) : isOwner ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 font-black text-[11px]">
                           <Shield className="w-3 h-3 text-purple-600" />
                           المالك / مدير 👑
@@ -411,6 +417,7 @@ export const WorkersManager: React.FC = () => {
                   >
                     <option value="cashier">عامل / كاشير (تشغيلي بدون أرباح)</option>
                     <option value="admin">مالك / شريك (صلاحيات كاملة وأرباح)</option>
+                    <option value="developer">مطور نظام (صلاحيات كاملة وشاملة ومفتوحة)</option>
                   </select>
                 </div>
 

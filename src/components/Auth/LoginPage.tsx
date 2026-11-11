@@ -9,6 +9,7 @@ import {
   LogIn,
   Shield,
   Briefcase,
+  Code2,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -184,17 +185,17 @@ export const LoginPage: React.FC = () => {
             <span className="text-[11px] font-bold text-slate-400 block mb-2 text-center">
               حسابات تجريبية للمعاينة بضغطة زر واحدة:
             </span>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickDemo(ownerUsername, ownerPass)}
-                className="p-3 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-right transition-all cursor-pointer flex flex-col justify-between"
+                className="p-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-right transition-all cursor-pointer flex flex-col justify-between"
               >
                 <div className="flex items-center gap-1 text-purple-900 font-black text-xs mb-1">
                   <Shield className="w-3.5 h-3.5 text-purple-600" />
                   <span>دخول المالك 👑</span>
                 </div>
-                <div className="text-[11px] text-purple-800 font-mono space-y-0.5">
+                <div className="text-[10px] text-purple-800 font-mono space-y-0.5">
                   <p>المستخدم: <strong>{ownerUsername}</strong></p>
                   <p>الباسورد: <strong>{ownerPass}</strong></p>
                 </div>
@@ -203,15 +204,30 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickDemo(workerUsername, workerPass)}
-                className="p-3 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-right transition-all cursor-pointer flex flex-col justify-between"
+                className="p-2.5 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-right transition-all cursor-pointer flex flex-col justify-between"
               >
                 <div className="flex items-center gap-1 text-sky-900 font-black text-xs mb-1">
                   <Briefcase className="w-3.5 h-3.5 text-sky-600" />
                   <span>دخول الكاشير 👷</span>
                 </div>
-                <div className="text-[11px] text-sky-800 font-mono space-y-0.5">
+                <div className="text-[10px] text-sky-800 font-mono space-y-0.5">
                   <p>المستخدم: <strong>{workerUsername}</strong></p>
                   <p>الباسورد: <strong>{workerPass}</strong></p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickDemo('developer', settings.developerPassword || 'dev@trio2026')}
+                className="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-right transition-all cursor-pointer flex flex-col justify-between"
+              >
+                <div className="flex items-center gap-1 text-emerald-900 font-black text-xs mb-1">
+                  <Code2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>دخول المطور 💻</span>
+                </div>
+                <div className="text-[10px] text-emerald-800 font-mono space-y-0.5">
+                  <p>المستخدم: <strong>developer</strong></p>
+                  <p>الباسورد: <strong>{settings.developerPassword || 'dev@trio2026'}</strong></p>
                 </div>
               </button>
             </div>
