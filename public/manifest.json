@@ -1,0 +1,27 @@
+{
+  "short_name": "تريو كار ووش",
+  "name": "تريو كار ووش | Trio Car Wash & Oil Center",
+  "description": "نظام إدارة مغسلة السيارات وتغيير الزيوت والمخزون السحابي",
+  "icons": [
+    {
+      "src": "/car-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "48x48 72x72 96x96",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#0284c7",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "ar",
+  "dir": "rtl"
+}

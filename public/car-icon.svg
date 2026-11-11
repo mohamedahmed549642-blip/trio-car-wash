@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="carGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="190" fill="#ffffff" fill-opacity="0.05" stroke="#38bdf8" stroke-width="4" stroke-dasharray="12 12"/>
+  <!-- Car Silhouette -->
+  <g transform="translate(64, 120)">
+    <!-- Water Bubbles / Foam -->
+    <circle cx="100" cy="40" r="14" fill="#38bdf8" fill-opacity="0.6"/>
+    <circle cx="220" cy="20" r="18" fill="#bae6fd" fill-opacity="0.8"/>
+    <circle cx="290" cy="35" r="12" fill="#38bdf8" fill-opacity="0.7"/>
+    <!-- Car Body -->
+    <path d="M70 180 L120 110 Q140 90 180 90 L260 90 Q290 90 310 110 L350 180 L365 190 Q384 195 384 215 L384 245 Q384 255 374 255 L354 255 Q354 285 324 285 Q294 285 294 255 L154 255 Q154 285 124 285 Q94 285 94 255 L10 255 Q0 255 0 245 L0 215 Q0 195 19 190 Z" fill="url(#carGrad)"/>
+    <!-- Windows -->
+    <path d="M135 120 L175 120 L175 170 L95 170 Z" fill="#0284c7"/>
+    <path d="M195 120 L270 120 L295 170 L195 170 Z" fill="#0284c7"/>
+    <!-- Headlight -->
+    <polygon points="350,195 375,200 375,215 350,210" fill="#fef08a"/>
+    <!-- Wheels -->
+    <circle cx="124" cy="255" r="34" fill="#0f172a" stroke="#94a3b8" stroke-width="6"/>
+    <circle cx="124" cy="255" r="14" fill="#38bdf8"/>
+    <circle cx="324" cy="255" r="34" fill="#0f172a" stroke="#94a3b8" stroke-width="6"/>
+    <circle cx="324" cy="255" r="14" fill="#38bdf8"/>
+  </g>
+</svg>
