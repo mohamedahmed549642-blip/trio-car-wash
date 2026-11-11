@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
 
 let app: FirebaseApp | null = null;
@@ -58,7 +58,13 @@ export const initFirebase = (config?: FirebaseClientConfig): { app: FirebaseApp 
     } else {
       app = initializeApp(activeConfig);
     }
-    db = getFirestore(app);
+    try {
+      db = initializeFirestore(app, {
+        ignoreUndefinedProperties: true,
+      });
+    } catch {
+      db = getFirestore(app);
+    }
     auth = getAuth(app);
 
     // Save for persistent reuse

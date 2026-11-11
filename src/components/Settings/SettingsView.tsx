@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Cloud,
+  UploadCloud,
   RefreshCw,
   Download,
   Upload,
@@ -26,6 +27,7 @@ export const SettingsView: React.FC = () => {
     updateSettings,
     isCloudConnected,
     reconnectCloud,
+    uploadAllToFirebase,
     isDeveloperUnlocked,
     loginDeveloper,
     logoutDeveloper,
@@ -61,6 +63,7 @@ export const SettingsView: React.FC = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Developer Login Handler
   const handleDeveloperLogin = (e: React.FormEvent) => {
@@ -142,6 +145,24 @@ export const SettingsView: React.FC = () => {
       alert('🎉 تم الاتصال بقاعدة بيانات Firebase السحابية بنجاح! تطبيقك الآن مربوط بالسحابة ويمكنك فتحه من أي جهاز.');
     } else {
       alert('تعذر الاتصال بـ Firebase، يرجى مراجعة صحة المفاتيح المدخلة.');
+    }
+  };
+
+  // Push all local data from this machine to Cloud Firestore
+  const handleUploadAllToCloud = async () => {
+    if (
+      !confirm(
+        'هل تريد رفع ومزامنة كافة بيانات هذا الجهاز (أوامر التشغيل، سجل الحركات، المخزون، الورديات، المصروفات) إلى السحابة الآن؟ ستصبح متاحة لجميع الأجهزة الأخرى فوراً.'
+      )
+    ) {
+      return;
+    }
+    setIsUploading(true);
+    try {
+      const res = await uploadAllToFirebase();
+      alert(res.message);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -319,14 +340,27 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {isCloudConnected && (
-            <button
-              onClick={handleSyncCloud}
-              disabled={isSyncing}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-              <span>{isSyncing ? 'جاري المزامنة...' : 'مزامنة السحابة الآن'}</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleUploadAllToCloud}
+                disabled={isUploading || isSyncing}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer"
+                title="رفع أوامر التشغيل وسجل الحركات والورديات من هذا الجهاز إلى السحابة"
+              >
+                <UploadCloud className={`w-3.5 h-3.5 ${isUploading ? 'animate-bounce' : ''}`} />
+                <span>{isUploading ? 'جاري الرفع...' : 'رفع بيانات الجهاز للسحابة ☁️'}</span>
+              </button>
+
+              <button
+                onClick={handleSyncCloud}
+                disabled={isSyncing || isUploading}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+                title="تنزيل وتحديث الفواتير والحركات من السحابة إلى هذا الجهاز"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                <span>{isSyncing ? 'جاري المزامنة...' : 'تنزيل ومزامنة من السحابة 🔄'}</span>
+              </button>
+            </div>
           )}
         </div>
 

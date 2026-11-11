@@ -66,6 +66,7 @@ interface AppContextType {
   updateSettings: (newSettings: ShopSettings) => Promise<void>;
   isCloudConnected: boolean;
   reconnectCloud: () => void;
+  uploadAllToFirebase: () => Promise<{ success: boolean; message: string }>;
 
   // Developer Access Control
   isDeveloperUnlocked: boolean;
@@ -227,6 +228,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (res.inventory && res.inventory.length > 0) setInventory(res.inventory);
           if (res.orders && res.orders.length > 0) setOrders(res.orders);
           if (res.shifts && res.shifts.length > 0) setShifts(res.shifts);
+          if (res.movements && res.movements.length > 0) setStockMovements(res.movements);
+          if (res.expenses && res.expenses.length > 0) setExpenses(res.expenses);
+          if (res.settings) setSettings(res.settings);
+          if (res.users && res.users.length > 0) setUsers(res.users);
         }
       });
     }
@@ -241,9 +246,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (res.inventory && res.inventory.length > 0) setInventory(res.inventory);
           if (res.orders && res.orders.length > 0) setOrders(res.orders);
           if (res.shifts && res.shifts.length > 0) setShifts(res.shifts);
+          if (res.movements && res.movements.length > 0) setStockMovements(res.movements);
+          if (res.expenses && res.expenses.length > 0) setExpenses(res.expenses);
+          if (res.settings) setSettings(res.settings);
+          if (res.users && res.users.length > 0) setUsers(res.users);
         }
       });
     }
+  };
+
+  const uploadAllToFirebase = async () => {
+    return await storage.uploadAllToFirebase();
   };
 
   // Find active open shift
@@ -673,6 +686,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateSettings,
         isCloudConnected,
         reconnectCloud,
+        uploadAllToFirebase,
         isDeveloperUnlocked,
         loginDeveloper,
         logoutDeveloper,
