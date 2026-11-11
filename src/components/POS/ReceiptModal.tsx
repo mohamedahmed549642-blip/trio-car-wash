@@ -91,7 +91,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
             </button>
             */}
 
-            <button
+            {/* <button
               onClick={handleCopyMessage}
               className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-slate-300 active:scale-95 transition-all cursor-pointer"
               title="نسخ نص الفاتورة بالكامل للصقه يدوياً في أي محادثة"
@@ -100,7 +100,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
               <span>{copied ? 'تم النسخ! ✨' : 'نسخ النص 📋'}</span>
             </button>
 
-            {/* <button
+            <button
               onClick={handlePrint}
               className="inline-flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
             >
