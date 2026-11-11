@@ -130,23 +130,33 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
       {/* Main Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
-          {/* Logo & Name */}
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('pos')}>
-            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-md shadow-sky-500/20 border border-slate-700/60 overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+          {/* Logo & Brand Identity */}
+          <div
+            className="flex items-center gap-3 cursor-pointer group select-none"
+            onClick={() => setActiveTab('pos')}
+            title="الرئيسية - كاشير تريو كار ووش"
+          >
+            {/* Logo Badge */}
+            <div className="h-11 sm:h-12 w-auto bg-white rounded-2xl px-2.5 py-1 flex items-center justify-center shadow-lg shadow-sky-500/15 border border-sky-400/30 group-hover:border-sky-400 group-hover:scale-105 group-hover:shadow-sky-500/25 transition-all shrink-0">
               <img
                 src="/logo.png"
                 alt="Trio Car Wash Logo"
-                className="w-full h-full object-contain"
+                className="h-full w-auto max-w-[110px] sm:max-w-[130px] object-contain"
               />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-lg sm:text-xl tracking-tight text-white group-hover:text-sky-300 transition-colors">
-                  Trio Car Wash
+
+            {/* Modern Brand Text */}
+            <div className="flex flex-col text-right">
+              <div className="flex items-center gap-1.5">
+                <span className="font-black text-base sm:text-lg tracking-tight bg-gradient-to-r from-sky-400 via-cyan-200 to-white bg-clip-text text-transparent group-hover:from-sky-300 group-hover:to-cyan-100 transition-all">
+                  تريو كار ووش
+                </span>
+                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/30 tracking-wider">
+                  POS
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
-                مغسلة وغيار زيوت سيارات
+              <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block">
+                العناية بالسيارات وغيار الزيوت
               </p>
             </div>
           </div>
