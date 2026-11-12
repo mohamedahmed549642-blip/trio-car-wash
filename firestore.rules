@@ -6,6 +6,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Services catalog (wash packages, oil change services, detailing)
+    match /services/{serviceId} {
+      allow read, write: if true;
+    }
+
     // Service & Wash Orders
     match /orders/{orderId} {
       allow read, write: if true;

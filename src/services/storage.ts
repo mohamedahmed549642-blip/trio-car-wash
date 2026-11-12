@@ -4,6 +4,7 @@ import {
   setDoc,
   getDoc,
   getDocs,
+  deleteDoc,
   writeBatch,
 } from 'firebase/firestore';
 import { getFirebaseDb } from './firebase';
@@ -85,8 +86,33 @@ export const storage = {
     }
   },
 
-  saveServices: (services: ServiceItem[]): void => {
+  saveServices: async (services: ServiceItem[]): Promise<void> => {
     localStorage.setItem(KEYS.SERVICES, JSON.stringify(services));
+    const db = getFirebaseDb();
+    if (db && services.length > 0) {
+      try {
+        const batch = writeBatch(db);
+        services.forEach((s) => {
+          const ref = doc(db, 'services', s.id);
+          batch.set(ref, cleanForFirestore(s));
+        });
+        await batch.commit();
+      } catch (err) {
+        console.warn('Firebase sync services error (offline fallback kept):', err);
+      }
+    }
+  },
+
+  deleteService: async (serviceId: string, remainingServices: ServiceItem[]): Promise<void> => {
+    localStorage.setItem(KEYS.SERVICES, JSON.stringify(remainingServices));
+    const db = getFirebaseDb();
+    if (db) {
+      try {
+        await deleteDoc(doc(db, 'services', serviceId));
+      } catch (err) {
+        console.warn('Firebase delete service error:', err);
+      }
+    }
   },
 
   getOrders: (): ServiceOrder[] => {
@@ -306,6 +332,7 @@ export const storage = {
     expenses?: Expense[];
     settings?: ShopSettings;
     users?: UserProfile[];
+    services?: ServiceItem[];
   }> => {
     const db = getFirebaseDb();
     if (!db) {
@@ -437,9 +464,26 @@ export const storage = {
         }
       }
 
+      // 8. Services (خدمات الغسيل والصيانة والأسعار)
+      let loadedServices: ServiceItem[] | undefined;
+      const srvSnap = await getDocs(collection(db, 'services'));
+      if (!srvSnap.empty) {
+        loadedServices = [];
+        srvSnap.forEach((d) => loadedServices!.push(d.data() as ServiceItem));
+        localStorage.setItem(KEYS.SERVICES, JSON.stringify(loadedServices));
+      } else {
+        const localServices = storage.getServices();
+        if (localServices.length > 0) {
+          const batch = writeBatch(db);
+          localServices.forEach((s) => batch.set(doc(db, 'services', s.id), cleanForFirestore(s)));
+          await batch.commit();
+          loadedServices = localServices;
+        }
+      }
+
       return {
         success: true,
-        message: 'تمت مزامنة كافة البيانات السحابية (فواتير، مخزن، حركات، ورديات) بنجاح!',
+        message: 'تمت مزامنة كافة البيانات السحابية (فواتير، مخزن، حركات، ورديات، خدمات وأسعار) بنجاح!',
         inventory: loadedInv,
         orders: loadedOrd,
         shifts: loadedShifts,
@@ -447,6 +491,7 @@ export const storage = {
         expenses: loadedExp,
         settings: loadedSettings,
         users: loadedUsers,
+        services: loadedServices,
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -512,6 +557,14 @@ export const storage = {
         const batch6 = writeBatch(db);
         users.forEach((u) => batch6.set(doc(db, 'users', u.id), cleanForFirestore(u)));
         await batch6.commit();
+      }
+
+      // 8. Services
+      const srv = storage.getServices();
+      if (srv.length > 0) {
+        const batch7 = writeBatch(db);
+        srv.forEach((s) => batch7.set(doc(db, 'services', s.id), cleanForFirestore(s)));
+        await batch7.commit();
       }
 
       return { success: true, message: 'تم رفع ومزامنة كافة بيانات هذا الجهاز مع السحابة بنجاح!' };

@@ -15,10 +15,11 @@ import {
   Unlock,
   Users,
   LogOut,
+  Tag,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-export type TabType = 'pos' | 'inventory' | 'shifts' | 'orders' | 'reports' | 'workers' | 'settings';
+export type TabType = 'pos' | 'inventory' | 'shifts' | 'orders' | 'reports' | 'workers' | 'services' | 'settings';
 
 interface NavbarProps {
   activeTab: TabType;
@@ -238,6 +239,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
               </button>
             )}
 
+            {isAdmin && (
+              <button
+                onClick={() => setActiveTab('services')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'services'
+                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                  }`}
+              >
+                <Tag className="w-4 h-4 text-amber-400" />
+                <span>الخدمات والأسعار 🏷️</span>
+              </button>
+            )}
+
             {isDev && (
               <button
                 onClick={() => setActiveTab('settings')}
@@ -320,6 +334,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             >
               <Users className="w-4 h-4" />
               <span>العمال</span>
+            </button>
+          )}
+          {isAdmin && (
+            <button
+              onClick={() => setActiveTab('services')}
+              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg whitespace-nowrap ${activeTab === 'services' ? 'text-sky-400 font-bold' : 'text-slate-400'
+                }`}
+            >
+              <Tag className="w-4 h-4 text-amber-400" />
+              <span>الخدمات</span>
             </button>
           )}
           {isDev && (

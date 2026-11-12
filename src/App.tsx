@@ -9,6 +9,7 @@ import { ShiftManager } from './components/Shifts/ShiftManager';
 import { OrdersList } from './components/Orders/OrdersList';
 import { ReportsDashboard } from './components/Analytics/ReportsDashboard';
 import { WorkersManager } from './components/Workers/WorkersManager';
+import { ServicesManager } from './components/Services/ServicesManager';
 import { SettingsView } from './components/Settings/SettingsView';
 import { LoginPage } from './components/Auth/LoginPage';
 import { ToastContainer } from './components/UI/ToastContainer';
@@ -20,6 +21,7 @@ const MainAppContent: React.FC = () => {
     settings,
     isAuthenticated,
     activeUser,
+    isAdmin,
     isDeveloperUnlocked,
     toasts,
     dismissToast,
@@ -71,6 +73,8 @@ const MainAppContent: React.FC = () => {
         {activeTab === 'reports' && <ReportsDashboard />}
 
         {activeTab === 'workers' && <WorkersManager />}
+
+        {activeTab === 'services' && isAdmin && <ServicesManager />}
 
         {activeTab === 'settings' && isDev && <SettingsView />}
       </main>

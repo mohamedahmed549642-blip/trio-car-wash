@@ -13,6 +13,7 @@ import {
 } from '../types';
 import { storage } from '../services/storage';
 import { initFirebase } from '../services/firebase';
+import { INITIAL_SERVICES } from '../data/initialData';
 import { ToastType, ToastItem } from '../components/UI/ToastContainer';
 
 interface AppContextType {
@@ -28,7 +29,10 @@ interface AppContextType {
 
   // Services
   services: ServiceItem[];
-  updateService: (service: ServiceItem) => void;
+  addService: (serviceData: Omit<ServiceItem, 'id'>) => Promise<ServiceItem>;
+  updateService: (service: ServiceItem) => Promise<void>;
+  deleteService: (serviceId: string) => Promise<void>;
+  resetServicesToDefault: () => Promise<void>;
 
   // Orders
   orders: ServiceOrder[];
@@ -336,6 +340,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (res.expenses && res.expenses.length > 0) setExpenses(res.expenses);
           if (res.settings) setSettings(res.settings);
           if (res.users && res.users.length > 0) setUsers(res.users);
+          if (res.services && res.services.length > 0) setServices(res.services);
         }
       });
     }
@@ -354,6 +359,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (res.expenses && res.expenses.length > 0) setExpenses(res.expenses);
           if (res.settings) setSettings(res.settings);
           if (res.users && res.users.length > 0) setUsers(res.users);
+          if (res.services && res.services.length > 0) setServices(res.services);
         }
       });
     }
@@ -521,10 +527,37 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   // --- Services Actions ---
-  const updateService = (service: ServiceItem): void => {
+  const addService = async (serviceData: Omit<ServiceItem, 'id'>): Promise<ServiceItem> => {
+    const newService: ServiceItem = {
+      ...serviceData,
+      id: `srv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    const updated = [...services, newService];
+    setServices(updated);
+    await storage.saveServices(updated);
+    notify.success(`تمت إضافة خدمة "${newService.name}" وتحديد أسعارها بنجاح`, 'تمت إضافة الخدمة');
+    return newService;
+  };
+
+  const updateService = async (service: ServiceItem): Promise<void> => {
     const updated = services.map((s) => (s.id === service.id ? service : s));
     setServices(updated);
-    storage.saveServices(updated);
+    await storage.saveServices(updated);
+    notify.success(`تم تحديث أسعار وبيانات خدمة "${service.name}" بنجاح`, 'تم تحديث الخدمة');
+  };
+
+  const deleteService = async (serviceId: string): Promise<void> => {
+    const target = services.find((s) => s.id === serviceId);
+    const updated = services.filter((s) => s.id !== serviceId);
+    setServices(updated);
+    await storage.deleteService(serviceId, updated);
+    notify.warning(`تم حذف خدمة "${target?.name || ''}" بنجاح`, 'تم حذف الخدمة');
+  };
+
+  const resetServicesToDefault = async (): Promise<void> => {
+    setServices(INITIAL_SERVICES);
+    await storage.saveServices(INITIAL_SERVICES);
+    notify.info('تمت استعادة قائمة الخدمات والأسعار القياسية الافتراضية', 'استعادة الخدمات الافتراضية');
   };
 
   // --- Orders & POS Actions ---
@@ -762,7 +795,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         updateItem,
         deleteItem,
         services,
+        addService,
         updateService,
+        deleteService,
+        resetServicesToDefault,
         orders,
         createOrder,
         recentCarPlates,
