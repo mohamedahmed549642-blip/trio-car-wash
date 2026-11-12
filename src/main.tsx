@@ -12,7 +12,7 @@ if ('serviceWorker' in navigator) {
 
       // Populate CacheStorage with active page assets right now
       if ('caches' in window) {
-        const cache = await caches.open('trio-car-wash-v3');
+        const cache = await caches.open('trio-car-wash-v5');
         const urlsToCache: string[] = ['/', '/index.html'];
 
         document.querySelectorAll('script[src]').forEach((s) => {

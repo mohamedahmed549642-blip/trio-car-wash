@@ -137,11 +137,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             title="الرئيسية - كاشير تريو كار ووش"
           >
             {/* Logo Badge */}
-            <div className="h-11 sm:h-12 w-auto bg-white rounded-2xl px-2.5 py-1 flex items-center justify-center shadow-lg shadow-sky-500/15 border border-sky-400/30 group-hover:border-sky-400 group-hover:scale-105 group-hover:shadow-sky-500/25 transition-all shrink-0">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 bg-white rounded-2xl p-1 flex items-center justify-center shadow-lg shadow-sky-500/20 border border-sky-400/40 group-hover:border-sky-400 group-hover:scale-105 group-hover:shadow-sky-500/30 transition-all shrink-0 overflow-hidden">
               <img
                 src="/logo.png"
                 alt="Trio Car Wash Logo"
-                className="h-full w-auto max-w-[110px] sm:max-w-[130px] object-contain"
+                className="w-full h-full object-contain"
               />
             </div>
 
@@ -156,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block">
-                العناية بالسيارات وغيار الزيوت
+                غسيل وتلميع سيارات • تغيير زيوت وفلاتر
               </p>
             </div>
           </div>

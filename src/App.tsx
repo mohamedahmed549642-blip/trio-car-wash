@@ -82,11 +82,7 @@ const MainAppContent: React.FC = () => {
             <img src="/logo.png" alt="Trio Logo" className="w-6 h-6 object-contain" />
             <span>{settings.shopName}</span>
             <span className="text-slate-400 font-normal">| {settings.slogan}</span>
-          </div>
-
-          <div className="text-[11px] text-slate-400">
-            <span>نظام إدارة مغاسل السيارات ومخزون الزيوت السحابي • مخصص للسوق المصري 🇪🇬</span>
-          </div>
+          </div> 
         </div>
       </footer>
 
