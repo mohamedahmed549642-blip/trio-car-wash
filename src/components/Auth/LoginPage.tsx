@@ -12,6 +12,7 @@ import {
   Code2,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { MasarTechModal } from '../UI/MasarTechModal';
 
 export const LoginPage: React.FC = () => {
   const { users, loginWithCredentials, settings } = useApp();
@@ -20,6 +21,7 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isMasarModalOpen, setIsMasarModalOpen] = useState(false);
 
   const usernameInputRef = useRef<HTMLInputElement>(null);
 
@@ -239,10 +241,35 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Footer Note */}
-        <div className="text-center mt-5 text-xs text-slate-400 flex items-center justify-center gap-1.5">
-          <Shield className="w-3.5 h-3.5 text-slate-500" />
-          <span>المالك يتحكم بإضافة وحذف حسابات العمال وتعيين كلمات المرور</span>
+        <div className="text-center mt-5 text-xs text-slate-400 flex flex-col items-center justify-center gap-3">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <Shield className="w-3.5 h-3.5 text-slate-500" />
+            <span>المالك يتحكم بإضافة وحذف حسابات العمال وتعيين كلمات المرور</span>
+          </div>
+
+          {/* Masar Tech Developer Badge on Login */}
+          <button
+            type="button"
+            onClick={() => setIsMasarModalOpen(true)}
+            className="group inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-900/90 border border-slate-800 hover:border-sky-500/60 text-slate-300 transition-all cursor-pointer shadow-lg hover:shadow-sky-500/10 active:scale-95"
+            title="تعرف على الشركة المطورة (Masar Tech)"
+          >
+            <span className="text-[11px] text-slate-400">تطوير وبرمجة:</span>
+            <img src="/masar-tech-logo.svg" alt="Masar Tech" className="w-4 h-4 object-contain" />
+            <span className="font-black text-xs text-white tracking-wider group-hover:text-sky-300 transition-colors">
+              MASAR TECH
+            </span>
+            <span className="text-[10px] text-sky-400 font-bold bg-sky-950/80 px-2 py-0.5 rounded-full border border-sky-800/80">
+              مسار تك
+            </span>
+          </button>
         </div>
+
+        {/* Masar Tech Brand Modal */}
+        <MasarTechModal
+          isOpen={isMasarModalOpen}
+          onClose={() => setIsMasarModalOpen(false)}
+        />
       </div>
     </div>
   );

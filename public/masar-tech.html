@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مسار تك | MASAR TECH - حلول برمجية وتطوير المواقع وتطبيقات الموبايل</title>
+  <link rel="icon" type="image/svg+xml" href="/masar-tech-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'sans-serif'],
+          },
+          colors: {
+            masar: {
+              cyan: '#00F0FF',
+              blue: '#0284C7',
+              navy: '#0B0F19',
+              dark: '#070A10'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#070A10] text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-black min-h-screen flex flex-col">
+
+  <!-- Ambient Background Glows -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-cyan-500/15 via-blue-600/10 to-transparent blur-3xl pointer-events-none -z-10"></div>
+  <div class="fixed bottom-0 right-10 w-[500px] h-[350px] bg-blue-500/10 blur-3xl pointer-events-none -z-10"></div>
+
+  <!-- Header & Navbar -->
+  <header class="sticky top-0 z-40 bg-[#070A10]/80 backdrop-blur-md border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 p-2 flex items-center justify-center shadow-lg shadow-cyan-500/5">
+          <img src="/masar-tech-logo.svg" alt="Masar Tech Logo" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <span class="text-xl font-black text-white tracking-wider flex items-center gap-1.5">
+            MASAR <span class="text-cyan-400">TECH</span>
+          </span>
+          <span class="text-[11px] text-slate-400 block -mt-1 font-bold">مسـار تـك للبرمجيات</span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#services" class="hover:text-cyan-400 transition-colors">خدماتنا</a>
+        <a href="#work" class="hover:text-cyan-400 transition-colors">أعمالنا</a>
+        <a href="#why-us" class="hover:text-cyan-400 transition-colors">لماذا مسار تك؟</a>
+      </nav>
+
+      <a href="https://wa.me/201000000000?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%85%D8%B3%D8%A7%D8%B1%20%D8%AA%D9%83%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%AA%D8%AD%D8%AF%D8%AB%20%D8%B9%D9%86%20%D9%85%D8%B4%D8%B1%D9%88%D8%B9%20%D8%AC%D8%AF%D9%8A%D8%AF" 
+         target="_blank" 
+         class="px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-lg shadow-cyan-500/20 active:scale-95">
+        ابدأ مشروعك معنا 🚀
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-1">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center relative">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-cyan-400 text-xs sm:text-sm font-bold mb-8 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <span>الوجهة الأولى لتطوير الويب وتطبيقات الموبايل في مصر والشرق الأوسط</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto">
+        نبتكر لك المسار الرقمي نحو <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500">النمو والنجاح</span>
+      </h1>
+
+      <p class="mt-6 text-base sm:text-xl text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
+        في <strong>مسار تك (Masar Tech)</strong>، نحول فكرتك إلى منصة ويب سريعة، أو تطبيق موبايل جذاب، أو نظام تشغيل سحابي متكامل يضاعف مبيعاتك وأرباحك.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <a href="https://wa.me/201000000000?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%85%D8%B3%D8%A7%D8%B1%20%D8%AA%D9%83%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%B7%D9%84%D8%A8%20%D8%B9%D8%B1%D8%B6%20%D8%B3%D8%B9%D8%B1" 
+           target="_blank" 
+           class="px-8 py-4 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-sm sm:text-base shadow-xl shadow-cyan-500/20 active:scale-95 transition-all">
+          اطلب استشارة وعرض سعر مجاني 💬
+        </a>
+        <a href="#work" 
+           class="px-8 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-sm sm:text-base transition-all">
+          شاهد نماذج من أعمالنا ↓
+        </a>
+      </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section id="services" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/60">
+      <div class="text-center mb-16">
+        <h2 class="text-xs sm:text-sm font-black text-cyan-400 uppercase tracking-widest">خدماتنا البرمجية</h2>
+        <p class="text-3xl sm:text-4xl font-black text-white mt-2">حلول تقنية شاملة من الصفر حتى الإطلاق</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-all group">
+          <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+            🌐
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">تطوير مواقع الويب والمنصات</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            مواقع فائقة السرعة ومتوافقة مع محركات البحث SEO، ومتاجر إلكترونية تدعم بوابات الدفع الإلكتروني وفوري والمحافظ الرقمية.
+          </p>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-all group">
+          <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+            📱
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">تطبيقات الهاتف الذكي (iOS & Android)</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            تطبيقات جوال سريعة وسلسة باستخدام أحدث أطر العمل (Flutter & React Native)، تعمل بدون إنترنت وبأداء عالي على متجري App Store و Google Play.
+          </p>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-all group">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+            ⚡
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">أنظمة نقاط البيع وإدارة المنشآت</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            أنظمة POS وكاشير سحابية متقدمة، إدارة المخزون، تقارير الأرباح، وحسابات العمال مع مزامنة سحابية فورية مثل نظام <em>تريو كار ووش</em>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Live Project Showcase -->
+    <section id="work" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/60">
+      <div class="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div class="max-w-xl text-right">
+            <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs border border-emerald-500/30">
+              مشروع حي تم إطلاقه بنجاح 🚀
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-black text-white mt-4">
+              نظام إدارة وتشغيل مغاسل السيارات: Trio Car Wash
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
+              نظام تشغيلي متكامل صممته وطورته <strong>مسار تك</strong> يشمل كاشير POS، إدارة تغيير الزيوت، المخازن وحركات المخزون، تتبع الورديات والمصروفات، ومزامنة سحابية عبر Firebase.
+            </p>
+            <div class="mt-6 flex items-center gap-4">
+              <a href="/" class="px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs sm:text-sm transition-all">
+                فتح وتجربة النظام ↗
+              </a>
+            </div>
+          </div>
+
+          <div class="w-full lg:w-1/2 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-950 p-4">
+            <img src="/masar-tech-logo.jpg" alt="Masar Tech Work" class="w-full h-auto rounded-xl object-cover">
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 border-t border-slate-800 py-10 text-center text-slate-500 text-xs">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-white font-black text-sm">
+        <img src="/masar-tech-logo.svg" alt="Masar Tech" class="w-6 h-6 object-contain">
+        <span>MASAR TECH • مسار تك للبرمجيات</span>
+      </div>
+      <p>© 2026 جميع الحقوق محفوظة لشركة مسار تك للبرمجيات وتكنولوجيا المعلومات (مصر).</p>
+    </div>
+  </footer>
+
+</body>
+</html>

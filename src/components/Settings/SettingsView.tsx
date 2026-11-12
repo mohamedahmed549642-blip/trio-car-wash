@@ -313,6 +313,36 @@ export const SettingsView: React.FC = () => {
         </button>
       </div>
 
+      {/* Masar Tech System Architect & Support Card */}
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-sky-950 text-white p-6 rounded-2xl shadow-lg border border-slate-800 space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-slate-900 p-2 border border-slate-700/80 shadow-inner flex items-center justify-center shrink-0">
+              <img src="/masar-tech-logo.svg" alt="Masar Tech" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-black text-white">MASAR TECH • مسـار تـك</h2>
+                <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 font-bold text-[10px] border border-sky-500/30">
+                  الجهة المطورة للنظام
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                تطوير منصات الويب السحابية، وتطبيقات الهاتف الذكي (iOS & Android) ونظم نقاط البيع وإدارة المنشآت.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://wa.me/201000000000?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%85%D8%B3%D8%A7%D8%B1%20%D8%AA%D9%83%D8%8C%20%D8%A3%D8%AD%D8%AA%D8%A7%D8%AC%20%D8%AF%D8%B9%D9%85%20%D9%81%D9%86%D9%8A%20%D8%A3%D9%88%20%D8%AA%D8%B7%D9%88%D9%8A%D8%B1%20%D8%A8%D8%B1%D9%85%D8%AC%D9%8A"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer shrink-0"
+          >
+            <span>طلب دعم فني أو ميزات برمجية 🚀</span>
+          </a>
+        </div>
+      </div>
+
       {/* 1. Cloud Connection Card (Firebase) */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">

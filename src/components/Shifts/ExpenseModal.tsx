@@ -47,7 +47,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose }) =
               <Receipt className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base">تسجيل مصروف نثري من الدرج</h3>
+              <h3 className="font-extrabold text-base">تسجيل مصروف  من الدرج</h3>
               <p className="text-xs text-slate-400">شاي، فطار، صابون، صيانة طارئة أو نثريات</p>
             </div>
           </div>
