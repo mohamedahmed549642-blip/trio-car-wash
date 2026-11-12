@@ -137,11 +137,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
             title="الرئيسية - كاشير تريو كار ووش"
           >
             {/* Logo Badge */}
-            <div className="h-11 w-11 sm:h-12 sm:w-12 bg-white rounded-2xl p-1 flex items-center justify-center shadow-lg shadow-sky-500/20 border border-sky-400/40 group-hover:border-sky-400 group-hover:scale-105 group-hover:shadow-sky-500/30 transition-all shrink-0 overflow-hidden">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 bg-slate-950/80 rounded-2xl p-1 flex items-center justify-center shadow-lg shadow-sky-500/15 border border-sky-500/30 group-hover:border-sky-400 group-hover:scale-105 group-hover:shadow-sky-500/30 transition-all shrink-0 overflow-hidden backdrop-blur-md">
               <img
-                src="/logo.png"
+                src="/logo-white.png?v=2"
                 alt="Trio Car Wash Logo"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(56,189,248,0.3)]"
               />
             </div>
 
