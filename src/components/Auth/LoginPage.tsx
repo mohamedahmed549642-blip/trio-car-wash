@@ -74,11 +74,11 @@ export const LoginPage: React.FC = () => {
       <div className="relative z-10 w-full max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-6 space-y-2">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-slate-950/80 p-2.5 shadow-2xl shadow-sky-500/25 mb-1 ring-1 ring-sky-500/30 border border-slate-800 backdrop-blur-xl overflow-hidden">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white p-2 shadow-2xl shadow-sky-500/25 mb-1 ring-4 ring-white/10 overflow-hidden">
             <img
-              src="/logo-white.png?v=2"
+              src="/logo.png"
               alt="Trio Car Wash Logo"
-              className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(56,189,248,0.4)]"
+              className="w-full h-full object-contain"
             />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">

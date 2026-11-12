@@ -1,5 +1,5 @@
 // Trio Car Wash - Offline Service Worker (PWA)
-const CACHE_NAME = 'trio-car-wash-v7';
+const CACHE_NAME = 'trio-car-wash-v6';
 
 // Core assets to pre-cache on install
 const APP_SHELL = [
@@ -7,7 +7,6 @@ const APP_SHELL = [
   '/index.html',
   '/manifest.json',
   '/logo.png',
-  '/logo-white.png',
   '/logo.jpg',
   '/icon-192.png',
   '/icon-512.png',
