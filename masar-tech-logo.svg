@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#070a10" />
+    </radialGradient>
+
+    <!-- Path / Brand Gradients -->
+    <linearGradient id="cyanBlue" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="50%" stop-color="#00D2FF" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+
+    <linearGradient id="deepBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+
+    <linearGradient id="neonPath" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="40%" stop-color="#00F0FF" />
+      <stop offset="100%" stop-color="#67E8F9" />
+    </linearGradient>
+
+    <linearGradient id="accentGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="800" height="600" rx="20" fill="url(#bgGrad)" />
+
+  <!-- Subtle Tech Grid Lines in Background -->
+  <g opacity="0.06" stroke="#FFFFFF" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="600" />
+    <line x1="250" y1="0" x2="250" y2="600" />
+    <line x1="400" y1="0" x2="400" y2="600" />
+    <line x1="550" y1="0" x2="550" y2="600" />
+    <line x1="700" y1="0" x2="700" y2="600" />
+    <line x1="0" y1="150" x2="800" y2="150" />
+    <line x1="0" y1="300" x2="800" y2="300" />
+    <line x1="0" y1="450" x2="800" y2="450" />
+  </g>
+
+  <!-- Logo Emblem: Geometric 'M' with ascending Trajectory/Path (Masar) -->
+  <g transform="translate(400, 225)">
+    <!-- Ambient Glow behind Mark -->
+    <circle cx="0" cy="-10" r="95" fill="#00D2FF" opacity="0.12" filter="url(#glow)" />
+
+    <!-- Left Leg of 'M' -->
+    <path d="M -90,65 L -55,-55 C -53,-63 -45,-70 -35,-70 L -25,-70 C -15,-70 -8,-63 -5,-55 L 12,0 L -12,12 L -25,-32 C -27,-38 -32,-42 -38,-42 L -42,-42 C -48,-42 -52,-38 -54,-32 L -78,65 Z" 
+          fill="url(#deepBlue)" />
+
+    <!-- Left Forward Ribbon -->
+    <polygon points="-85,65 -50,-45 -22,-45 -57,65" fill="url(#cyanBlue)" />
+
+    <!-- The 'Masar' Trajectory (Ascending Central Arrow & Dynamic Path) -->
+    <!-- Center to Right Upward Surge -->
+    <path d="M -22,65 L 15,-20 L 38,-20 L 0,65 Z" fill="url(#deepBlue)" opacity="0.7" />
+    
+    <!-- Dynamic Glowing Trajectory Blade (The 'Path') -->
+    <path d="M -30,65 L 35,-65 C 40,-74 48,-80 58,-80 L 85,-80 L 52,-15 C 48,-8 40,-2 32,3 L -5,65 Z" 
+          fill="url(#neonPath)" filter="url(#glow)" />
+
+    <!-- Right Leg of 'M' / Terminal Node -->
+    <polygon points="50,65 80,-40 102,-40 72,65" fill="url(#cyanBlue)" />
+
+    <!-- Future Trajectory Arrow Head (Subtle upward vector at top right) -->
+    <polygon points="85,-80 105,-80 90,-50 75,-50" fill="#38BDF8" />
+
+    <!-- Digital Path Waypoint Accent (Dot / Guide Star) -->
+    <circle cx="108" cy="-80" r="5" fill="#00F0FF" filter="url(#glow)" />
+  </g>
+
+  <!-- Typography -->
+  <!-- "MASAR" -->
+  <text x="400" y="380" 
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+        font-size="44" 
+        font-weight="900" 
+        letter-spacing="9" 
+        text-anchor="middle" 
+        fill="#FFFFFF">
+    MASAR
+  </text>
+
+  <!-- "TECH" with Accent Badge Effect -->
+  <text x="400" y="420" 
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+        font-size="20" 
+        font-weight="700" 
+        letter-spacing="12" 
+        text-anchor="middle" 
+        fill="#00D2FF">
+    TECH
+  </text>
+
+  <!-- Subtitle / Positioning -->
+  <text x="400" y="465" 
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" 
+        font-size="13" 
+        font-weight="500" 
+        letter-spacing="5" 
+        text-anchor="middle" 
+        fill="#94A3B8">
+    WEB &amp; APP DEVELOPMENT STUDIO
+  </text>
+
+  <!-- Arabic Sub-tagline -->
+  <text x="400" y="500" 
+        font-family="'Cairo', 'Segoe UI', Arial, sans-serif" 
+        font-size="15" 
+        font-weight="600" 
+        letter-spacing="2" 
+        text-anchor="middle" 
+        fill="#64748B">
+    مسـار تـك — حلـول برمجـية متكاملـة
+  </text>
+</svg>

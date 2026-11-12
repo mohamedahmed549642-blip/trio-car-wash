@@ -142,7 +142,7 @@ export const ShiftManager: React.FC = () => {
                 className="inline-flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer"
               >
                 <Receipt className="w-4 h-4" />
-                <span>تسجيل مصروف نثري من الدرج 💸</span>
+                <span>تسجيل مصروف من الدرج 💵</span>
               </button>
 
               <button
@@ -312,13 +312,12 @@ export const ShiftManager: React.FC = () => {
                 {/* Diff Calculation */}
                 {actualCash > 0 && (
                   <div
-                    className={`p-3 rounded-xl border text-center font-bold text-xs ${
-                      actualCash === currentShift.expectedCash
+                    className={`p-3 rounded-xl border text-center font-bold text-xs ${actualCash === currentShift.expectedCash
                         ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                         : actualCash > currentShift.expectedCash
-                        ? 'bg-amber-50 border-amber-200 text-amber-800'
-                        : 'bg-rose-50 border-rose-200 text-rose-800'
-                    }`}
+                          ? 'bg-amber-50 border-amber-200 text-amber-800'
+                          : 'bg-rose-50 border-rose-200 text-rose-800'
+                      }`}
                   >
                     {actualCash === currentShift.expectedCash ? (
                       <span>الدرج مطابق تماماً 100% بدون أي عجز أو زيادة! ✨</span>

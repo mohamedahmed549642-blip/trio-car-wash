@@ -40,9 +40,9 @@ export const INITIAL_USERS: UserProfile[] = [
 export const INITIAL_SETTINGS: ShopSettings = {
   shopName: 'تريو كار ووش & زيوت سيارات',
   slogan: 'عناية فائقة بسيارتك • أفضل أنواع الزيوت والغسيل الاحترافي',
-  phone: '01012345678',
-  whatsappNumber: '201012345678',
-  address: 'مصر - القاهرة الجديدة - التجمع الخامس (بجوار محطة الوقود)',
+  phone: '01131706168',
+  whatsappNumber: '01131706168',
+  address: 'المنوفية-شبين الكوم-بحوار مدرسة عبدالمنعم رياض',
   currency: 'ج.م',
   receiptFooterMessage: 'شكراً لزيارتكم تريو كار ووش! نتمنى لكم قيادة آمنة دائماً.',
   whatsappMessageTemplate: 'أهلاً بحضرتك يا فندم! 🚗\nتمت صيانة وغسيل سيارتكم بنجاح في مركز تريو كار ووش.\n\nرقم الفاتورة: {orderNumber}\nالسيارة: {carModel} ({plateNumber})\nالخدمات والزيوت: {summary}\nالإجمالي: {total} ج.م\nالعداد الحالي: {currentOdometer} كم\nميعاد غيار الزيت القادم: عند عداد {nextOilOdometer} كم أو تاريخ {nextOilDate}.\n\nنسعد دائماً بخدمتكم! ✨',

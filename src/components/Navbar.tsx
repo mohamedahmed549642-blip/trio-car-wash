@@ -152,9 +152,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 <span className="font-black text-base sm:text-lg tracking-tight bg-gradient-to-r from-sky-400 via-cyan-200 to-white bg-clip-text text-transparent group-hover:from-sky-300 group-hover:to-cyan-100 transition-all">
                   تريو كار ووش
                 </span>
-                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-500/30 tracking-wider">
-                  POS
-                </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block">
                 غسيل وتلميع سيارات • تغيير زيوت وفلاتر
