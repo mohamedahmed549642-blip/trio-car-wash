@@ -102,6 +102,11 @@ d:\Trio Car Wash\src
    - Dual-mode data persistence: works offline instantly out of the box via `localStorage`, or syncs seamlessly with Firestore when configured.
    - Secured Firestore rules in `firestore.rules`.
 
+7. **Staff Management & Developer Security Isolation (`src/components/Workers`):**
+   - Developer accounts and developer role assignments are isolated from normal shop management.
+   - Shop owners only see and manage their regular staff (cashiers, technicians, and owners).
+   - The developer account (`@developer`), developer role option in modals, and developer metrics are visible exclusively when authenticated in Developer Mode (`isDev`).
+
 ---
 
 ## ⚙️ Environment Variables & Config
