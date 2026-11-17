@@ -10,7 +10,24 @@ export interface UserProfile {
   phone?: string;
   jobTitle?: string;
   dailyWage?: number;
+  monthlySalary?: number; // الراتب الشهري المحدد للعامل (ج.م)
   createdAt?: string;
+}
+
+export type SalaryPaymentMethod = 'cash_drawer' | 'external' | 'instapay' | 'vodafone_cash';
+
+export interface SalaryPayment {
+  id: string;
+  workerId: string;
+  workerName: string;
+  amount: number;
+  month: string; // e.g. "نوفمبر 2026"
+  paymentMethod: SalaryPaymentMethod;
+  deductFromDrawer: boolean;
+  shiftId?: string;
+  notes?: string;
+  paidAt: string;
+  paidBy: string;
 }
 
 export type VehicleSize = 'sedan' | 'suv' | 'van' | 'motorcycle';

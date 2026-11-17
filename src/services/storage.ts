@@ -17,6 +17,7 @@ import {
   Expense,
   ShopSettings,
   UserProfile,
+  SalaryPayment,
 } from '../types';
 import {
   INITIAL_INVENTORY,
@@ -34,6 +35,7 @@ const KEYS = {
   EXPENSES: 'trio_expenses_v1',
   SETTINGS: 'trio_settings_v1',
   USERS: 'trio_users_v1',
+  SALARY_PAYMENTS: 'trio_salary_payments_v1',
   CURRENT_USER: 'trio_active_user_v1',
 };
 
@@ -321,6 +323,32 @@ export const storage = {
     localStorage.setItem(KEYS.CURRENT_USER, JSON.stringify(user));
   },
 
+  getSalaryPayments: (): SalaryPayment[] => {
+    const data = localStorage.getItem(KEYS.SALARY_PAYMENTS);
+    if (!data) return [];
+    try {
+      return JSON.parse(data);
+    } catch {
+      return [];
+    }
+  },
+
+  saveSalaryPayments: async (payments: SalaryPayment[]): Promise<void> => {
+    localStorage.setItem(KEYS.SALARY_PAYMENTS, JSON.stringify(payments));
+    const db = getFirebaseDb();
+    if (db && payments.length > 0) {
+      try {
+        const batch = writeBatch(db);
+        payments.slice(0, 50).forEach((pay) => {
+          batch.set(doc(db, 'salary_payments', pay.id), cleanForFirestore(pay));
+        });
+        await batch.commit();
+      } catch (err) {
+        console.warn('Firebase sync salary_payments error:', err);
+      }
+    }
+  },
+
   // Pull all data from Cloud Firestore
   syncFromFirebase: async (): Promise<{
     success: boolean;
@@ -333,6 +361,7 @@ export const storage = {
     settings?: ShopSettings;
     users?: UserProfile[];
     services?: ServiceItem[];
+    salaryPayments?: SalaryPayment[];
   }> => {
     const db = getFirebaseDb();
     if (!db) {
@@ -481,9 +510,26 @@ export const storage = {
         }
       }
 
+      // 9. Salary Payments (رواتب ومستحقات العاملين)
+      let loadedSalaries: SalaryPayment[] | undefined;
+      const salSnap = await getDocs(collection(db, 'salary_payments'));
+      if (!salSnap.empty) {
+        loadedSalaries = [];
+        salSnap.forEach((d) => loadedSalaries!.push(d.data() as SalaryPayment));
+        localStorage.setItem(KEYS.SALARY_PAYMENTS, JSON.stringify(loadedSalaries));
+      } else {
+        const localSal = storage.getSalaryPayments();
+        if (localSal.length > 0) {
+          const batch = writeBatch(db);
+          localSal.forEach((s) => batch.set(doc(db, 'salary_payments', s.id), cleanForFirestore(s)));
+          await batch.commit();
+          loadedSalaries = localSal;
+        }
+      }
+
       return {
         success: true,
-        message: 'تمت مزامنة كافة البيانات السحابية (فواتير، مخزن، حركات، ورديات، خدمات وأسعار) بنجاح!',
+        message: 'تمت مزامنة كافة البيانات السحابية (فواتير، مخزن، حركات، ورديات، خدمات وأسعار ورواتب) بنجاح!',
         inventory: loadedInv,
         orders: loadedOrd,
         shifts: loadedShifts,
@@ -492,6 +538,7 @@ export const storage = {
         settings: loadedSettings,
         users: loadedUsers,
         services: loadedServices,
+        salaryPayments: loadedSalaries,
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -567,6 +614,14 @@ export const storage = {
         await batch7.commit();
       }
 
+      // 9. Salary Payments
+      const sal = storage.getSalaryPayments();
+      if (sal.length > 0) {
+        const batch8 = writeBatch(db);
+        sal.forEach((s) => batch8.set(doc(db, 'salary_payments', s.id), cleanForFirestore(s)));
+        await batch8.commit();
+      }
+
       return { success: true, message: 'تم رفع ومزامنة كافة بيانات هذا الجهاز مع السحابة بنجاح!' };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -584,6 +639,7 @@ export const storage = {
       movements: storage.getMovements(),
       shifts: storage.getShifts(),
       expenses: storage.getExpenses(),
+      salaryPayments: storage.getSalaryPayments(),
       settings: storage.getSettings(),
     };
     return JSON.stringify(backup, null, 2);
@@ -598,6 +654,7 @@ export const storage = {
       if (data.movements) localStorage.setItem(KEYS.MOVEMENTS, JSON.stringify(data.movements));
       if (data.shifts) localStorage.setItem(KEYS.SHIFTS, JSON.stringify(data.shifts));
       if (data.expenses) localStorage.setItem(KEYS.EXPENSES, JSON.stringify(data.expenses));
+      if (data.salaryPayments) localStorage.setItem(KEYS.SALARY_PAYMENTS, JSON.stringify(data.salaryPayments));
       if (data.settings) localStorage.setItem(KEYS.SETTINGS, JSON.stringify(data.settings));
       return true;
     } catch (err) {

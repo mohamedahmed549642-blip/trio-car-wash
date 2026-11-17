@@ -22,6 +22,7 @@ export const INITIAL_USERS: UserProfile[] = [
     phone: '01123456789',
     jobTitle: 'كاشير وفني تغيير زيوت',
     dailyWage: 250,
+    monthlySalary: 6000,
     createdAt: '2026-01-01T08:00:00.000Z',
   },
   {

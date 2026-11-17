@@ -10,6 +10,7 @@ import {
   UserProfile,
   StockMovementType,
   PaymentMethod,
+  SalaryPayment,
 } from '../types';
 import { storage } from '../services/storage';
 import { initFirebase } from '../services/firebase';
@@ -65,6 +66,11 @@ interface AppContextType {
   addUser: (userData: Omit<UserProfile, 'id'>) => Promise<UserProfile>;
   updateUser: (user: UserProfile) => Promise<void>;
   deleteUser: (userId: string) => Promise<boolean>;
+
+  // Salaries & Worker Payments
+  salaryPayments: SalaryPayment[];
+  payWorkerSalary: (paymentData: Omit<SalaryPayment, 'id' | 'paidAt' | 'paidBy'>) => Promise<SalaryPayment>;
+  deleteSalaryPayment: (paymentId: string) => Promise<boolean>;
 
   // Settings & Cloud
   settings: ShopSettings;
@@ -159,6 +165,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [orders, setOrders] = useState<ServiceOrder[]>(() => storage.getOrders());
   const [shifts, setShifts] = useState<Shift[]>(() => storage.getShifts());
   const [expenses, setExpenses] = useState<Expense[]>(() => storage.getExpenses());
+  const [salaryPayments, setSalaryPayments] = useState<SalaryPayment[]>(() => storage.getSalaryPayments());
   const [settings, setSettings] = useState<ShopSettings>(() => storage.getSettings());
   const [users, setUsers] = useState<UserProfile[]>(() => storage.getUsers());
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
@@ -338,6 +345,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (res.shifts && res.shifts.length > 0) setShifts(res.shifts);
           if (res.movements && res.movements.length > 0) setStockMovements(res.movements);
           if (res.expenses && res.expenses.length > 0) setExpenses(res.expenses);
+          if (res.salaryPayments && res.salaryPayments.length > 0) setSalaryPayments(res.salaryPayments);
           if (res.settings) setSettings(res.settings);
           if (res.users && res.users.length > 0) setUsers(res.users);
           if (res.services && res.services.length > 0) setServices(res.services);
@@ -357,6 +365,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           if (res.shifts && res.shifts.length > 0) setShifts(res.shifts);
           if (res.movements && res.movements.length > 0) setStockMovements(res.movements);
           if (res.expenses && res.expenses.length > 0) setExpenses(res.expenses);
+          if (res.salaryPayments && res.salaryPayments.length > 0) setSalaryPayments(res.salaryPayments);
           if (res.settings) setSettings(res.settings);
           if (res.users && res.users.length > 0) setUsers(res.users);
           if (res.services && res.services.length > 0) setServices(res.services);
@@ -800,6 +809,48 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return true;
   };
 
+  // --- Salary & Worker Payment Actions ---
+  const payWorkerSalary = async (
+    paymentData: Omit<SalaryPayment, 'id' | 'paidAt' | 'paidBy'>
+  ): Promise<SalaryPayment> => {
+    const newPayment: SalaryPayment = {
+      ...paymentData,
+      id: 'sal_' + Date.now(),
+      paidAt: new Date().toISOString(),
+      paidBy: activeUser.name,
+      shiftId: currentShift ? currentShift.id : undefined,
+    };
+
+    const updated = [newPayment, ...salaryPayments];
+    setSalaryPayments(updated);
+    await storage.saveSalaryPayments(updated);
+
+    // If deducting from cash drawer, record as an expense under labor
+    if (paymentData.deductFromDrawer) {
+      const desc = `صرف راتب شهر (${paymentData.month}) للعامل [${paymentData.workerName}]${
+        paymentData.notes ? ' - ' + paymentData.notes : ''
+      }`;
+      await addExpense('labor', paymentData.amount, desc);
+    }
+
+    notify.success(
+      `تم صرف راتب شهر ${paymentData.month} للعامل "${paymentData.workerName}" بقيمة ${paymentData.amount.toLocaleString(
+        'ar-EG'
+      )} ج.م بنجاح! 💵`,
+      'صرف الراتب'
+    );
+
+    return newPayment;
+  };
+
+  const deleteSalaryPayment = async (paymentId: string): Promise<boolean> => {
+    const updated = salaryPayments.filter((p) => p.id !== paymentId);
+    setSalaryPayments(updated);
+    await storage.saveSalaryPayments(updated);
+    notify.info('تم حذف حركة صرف الراتب من السجل.', 'سجل الرواتب');
+    return true;
+  };
+
   const updateSettings = async (newSettings: ShopSettings): Promise<void> => {
     setSettings(newSettings);
     await storage.saveSettings(newSettings);
@@ -849,6 +900,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         addUser,
         updateUser,
         deleteUser,
+        salaryPayments,
+        payWorkerSalary,
+        deleteSalaryPayment,
         settings,
         updateSettings,
         isCloudConnected,
