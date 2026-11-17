@@ -50,7 +50,7 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
 
   const handleSendWhatsApp = (order: ServiceOrder) => {
     if (!order.customerPhone) {
-      alert('لا يوجد رقم هاتف مسجل لهذا العميل.');
+      setSelectedReceiptOrder(order);
       return;
     }
     const message = generateWhatsAppInvoiceMessage(order, settings);
@@ -285,8 +285,6 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
                       <Printer className="w-4 h-4" />
                     </button>
 
-                    {/* WhatsApp sending temporarily commented per user request */}
-                    {/* 
                     <button
                       onClick={() => handleSendWhatsApp(ord)}
                       className="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl transition-colors cursor-pointer"
@@ -294,7 +292,6 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
                     >
                       <Share2 className="w-4 h-4" />
                     </button>
-                    */}
                   </div>
                 </div>
               </div>

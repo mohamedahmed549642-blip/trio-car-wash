@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Printer,
   Share2,
@@ -12,12 +12,14 @@ import {
   Copy,
   Check,
   MessageSquare,
+  ExternalLink,
 } from 'lucide-react';
 import { ServiceOrder } from '../../types';
 import { useApp } from '../../context/AppContext';
 import {
   generateWhatsAppInvoiceMessage,
   getWhatsAppDirectUrl,
+  getWhatsAppWebUrl,
 } from '../../services/whatsapp';
 
 interface ReceiptModalProps {
@@ -29,6 +31,15 @@ interface ReceiptModalProps {
 export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClose }) => {
   const { settings } = useApp();
   const [copied, setCopied] = useState(false);
+  const [phone, setPhone] = useState('');
+
+  useEffect(() => {
+    if (order?.customerPhone) {
+      setPhone(order.customerPhone);
+    } else {
+      setPhone('');
+    }
+  }, [order]);
 
   if (!isOpen || !order) return null;
 
@@ -36,13 +47,16 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
     window.print();
   };
 
-  const handleSendWhatsApp = () => {
-    if (!order.customerPhone) {
-      alert('يرجى التأكد من إدخال رقم هاتف العميل لإرسال الرسالة.');
+  const handleSendWhatsApp = (useWeb: boolean = false) => {
+    const targetPhone = phone.trim() || order.customerPhone?.trim() || '';
+    if (!targetPhone) {
+      alert('يرجى إدخال أو التأكد من رقم هاتف العميل لإرسال الرسالة.');
       return;
     }
     const message = generateWhatsAppInvoiceMessage(order, settings);
-    const url = getWhatsAppDirectUrl(order.customerPhone, message);
+    const url = useWeb
+      ? getWhatsAppWebUrl(targetPhone, message)
+      : getWhatsAppDirectUrl(targetPhone, message);
     window.open(url, '_blank');
   };
 
@@ -77,16 +91,61 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
           </button>
         </div>
 
-        {/* Action Buttons bar (WhatsApp, Copy Text, Print) - TEMPORARILY COMMENTED per user request to be put again later */}
-        {/* 
-        <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-2.5 print:hidden">
+        {/* Action Buttons & WhatsApp Controls (hidden in print) */}
+        <div className="p-4 bg-slate-50 border-b border-slate-200 space-y-3 print:hidden">
+          {/* Customer Phone Input & Quick Status */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-bold text-slate-700">
+                رقم هاتف العميل (واتساب):
+              </label>
+              {order.customerName && (
+                <span className="text-[10px] text-slate-500 font-medium">
+                  {order.customerName}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 bg-white rounded-xl px-3 py-2 border border-slate-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all shadow-sm">
+              <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
+              <input
+                type="tel"
+                dir="ltr"
+                placeholder="01012345678 (يدعم الأرقام الإنجليزية والعربية)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full text-xs sm:text-sm text-slate-800 font-mono font-bold outline-none bg-transparent"
+              />
+              {phone && (
+                <button
+                  type="button"
+                  onClick={() => setPhone('')}
+                  className="text-slate-400 hover:text-slate-600 text-xs px-1"
+                  title="مسح الرقم"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Action buttons */}
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={handleSendWhatsApp}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+              onClick={() => handleSendWhatsApp(false)}
+              className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+              title="إرسال عبر تطبيق واتساب المباشر (للهواتف والكمبيوتر)"
             >
               <Share2 className="w-4 h-4" />
-              <span>إرسال واتساب للعميل 📱</span>
+              <span>إرسال واتساب 📱</span>
+            </button>
+
+            <button
+              onClick={() => handleSendWhatsApp(true)}
+              className="inline-flex items-center justify-center gap-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md shadow-teal-600/20 active:scale-95 transition-all cursor-pointer"
+              title="فتح واتساب ويب في المتصفح مباشرة"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>واتساب ويب 🌐</span>
             </button>
 
             <button
@@ -101,28 +160,32 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
             <button
               onClick={handlePrint}
               className="inline-flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs sm:text-sm shadow-md active:scale-95 transition-all cursor-pointer"
+              title="طباعة إيصال حراري"
             >
               <Printer className="w-4 h-4" />
               <span>طباعة 🖨️</span>
             </button>
           </div>
 
-          <div className="text-[11px] text-slate-600 bg-amber-50 p-3 rounded-xl border border-amber-200 leading-relaxed text-right flex items-start gap-2.5">
+          {/* Quick Helpful Tip */}
+          <div className="text-[11px] text-slate-600 bg-amber-50 p-2.5 rounded-xl border border-amber-200 leading-relaxed text-right flex items-start gap-2">
             <MessageSquare className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-amber-950 block text-xs mb-0.5">
-                توضيح بخصوص كود واتساب (المطابقة بالأرقام مثل 857487487):
+              <span className="font-bold text-amber-950 block text-xs">
+                💡 طرق الإرسال المتاحة:
               </span>
               <span className="text-amber-900 block">
-                • كود الأرقام الذي يظهر على شاشة الكمبيوتر في واتساب ويب هو <strong>كود لربط واتساب المغسلة</strong> (الراسل) بالكمبيوتر لأول مرة فقط.
+                • <strong>إرسال واتساب:</strong> يفتح محادثة العميل فوراً بتطبيق واتساب أو الرابط المباشر.
               </span>
-              <span className="text-amber-900 block mt-0.5">
-                • لا تكتب رقم العميل هناك! إذا لم ترغب بربط واتساب المغسلة بالكمبيوتر، اضغط ببساطة على <strong>"نسخ النص 📋"</strong> باللون الرمادي وأرسل الرسالة من موبايلك لأي عميل مباشرة.
+              <span className="text-amber-900 block">
+                • <strong>واتساب ويب:</strong> مخصص لمن يعمل من متصفح الكمبيوتر بفتح WhatsApp Web فوراً.
+              </span>
+              <span className="text-amber-900 block">
+                • <strong>نسخ النص:</strong> لنسخ الفاتورة منسقة وجاهزة ولصقها بأي شات.
               </span>
             </div>
           </div>
         </div>
-        */}
 
         {/* Thermal Receipt Content */}
         <div id="receipt-print-area" className="p-6 text-slate-800 font-sans text-sm">
