@@ -72,7 +72,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
   const [carModel, setCarModel] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [vehicleSize, setVehicleSize] = useState<VehicleSize>('sedan');
+  const [vehicleSize, setVehicleSize] = useState<VehicleSize>('car');
   const [currentOdometer, setCurrentOdometer] = useState<string>('');
   const [nextOilChangeOdometer, setNextOilChangeOdometer] = useState<string>('');
   const [nextOilChangeDate, setNextOilChangeDate] = useState<string>('');
@@ -191,12 +191,20 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
     }
   }, [currentOdometer, selectedProducts]);
 
+  // Helper to resolve service price for 'car' or 'motorcycle'
+  const getServicePrice = (srv: ServiceItem, size: VehicleSize): number => {
+    if (size === 'motorcycle') {
+      return srv.basePrices.motorcycle || 0;
+    }
+    return srv.basePrices.car ?? srv.basePrices.sedan ?? srv.basePrices.suv ?? 0;
+  };
+
   // Price calculations
   const servicesTotal = useMemo(() => {
     return selectedServiceIds.reduce((sum, sId) => {
       const s = services.find((item) => item.id === sId);
       if (!s) return sum;
-      return sum + (s.basePrices[vehicleSize] || 0);
+      return sum + getServicePrice(s, vehicleSize);
     }, 0);
   }, [selectedServiceIds, services, vehicleSize]);
 
@@ -252,7 +260,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
         return {
           serviceId: s.id,
           serviceName: s.name,
-          price: s.basePrices[vehicleSize] || 0,
+          price: getServicePrice(s, vehicleSize),
         };
       });
 
@@ -402,20 +410,18 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             {/* Vehicle Size Selection */}
             <div className="mb-4">
               <label className="block text-xs font-bold text-slate-700 mb-2">
-                حجم ونوع السيارة (يحدد تسعيرة الغسيل آلياً):
+                نوع المركبة (يحدد تسعيرة الغسيل آلياً):
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {[
-                  { id: 'sedan', label: '🚗 سيدان / هاتشباك', desc: 'كورولا، إلنترا، صني' },
-                  { id: 'suv', label: '🚙 دفع رباعي / SUV', desc: 'توسان، سبورتاج، تيجو' },
-                  { id: 'van', label: '🚐 فان / ميكروباص / نقل', desc: 'هاي اس، كاري، جامبو' },
-                  { id: 'motorcycle', label: '🏍️ دراجة نارية / بيتش باجي', desc: 'موتوسيكل' },
+                  { id: 'car', label: '🚗 سيارة (ملاكي / نقل)', desc: 'جميع أنواع وأحجام السيارات' },
+                  { id: 'motorcycle', label: '🏍️ موتوسيكل / دراجة نارية', desc: 'موتوسيكل، فيسبا، بيتش باجي' },
                 ].map((sz) => (
                   <button
                     key={sz.id}
                     type="button"
                     onClick={() => setVehicleSize(sz.id as VehicleSize)}
-                    className={`p-2.5 rounded-xl border text-right transition-all cursor-pointer ${
+                    className={`p-3 rounded-xl border text-right transition-all cursor-pointer ${
                       vehicleSize === sz.id
                         ? 'bg-sky-50 border-sky-500 text-sky-950 font-black shadow-sm ring-2 ring-sky-500/20'
                         : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
@@ -502,7 +508,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-cyan-600" />
-                <span>خدمات الغسيل والعناية (الأسعار بحسب حجم {vehicleSize === 'sedan' ? 'السيدان' : vehicleSize === 'suv' ? 'الدفع الرباعي' : vehicleSize === 'van' ? 'الفان' : 'الدراجة'})</span>
+                <span>خدمات الغسيل والعناية (الأسعار بحسب: {vehicleSize === 'motorcycle' ? 'موتوسيكل 🏍️' : 'سيارة 🚗'})</span>
               </h3>
               <span className="text-xs font-bold text-sky-700 font-mono">
                 إجمالي الخدمات: {servicesTotal} ج.م
@@ -512,7 +518,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
               {services.map((srv) => {
                 const isSelected = selectedServiceIds.includes(srv.id);
-                const price = srv.basePrices[vehicleSize] || 0;
+                const price = getServicePrice(srv, vehicleSize);
 
                 return (
                   <div

@@ -36,19 +36,15 @@ export const ServicesManager: React.FC = () => {
   const [name, setName] = useState('');
   const [category, setCategory] = useState<ServiceItem['category']>('wash');
   const [description, setDescription] = useState('');
-  const [prices, setPrices] = useState<Record<VehicleSize, number>>({
-    sedan: 100,
-    suv: 130,
-    van: 160,
-    motorcycle: 60,
+  const [prices, setPrices] = useState<Record<string, number>>({
+    car: 100,
+    motorcycle: 50,
   });
 
   // Quick Inline Price Editing
   const [quickEditingId, setQuickEditingId] = useState<string | null>(null);
-  const [quickPrices, setQuickPrices] = useState<Record<VehicleSize, number>>({
-    sedan: 0,
-    suv: 0,
-    van: 0,
+  const [quickPrices, setQuickPrices] = useState<Record<string, number>>({
+    car: 0,
     motorcycle: 0,
   });
 
@@ -69,10 +65,8 @@ export const ServicesManager: React.FC = () => {
     setCategory('wash');
     setDescription('');
     setPrices({
-      sedan: 100,
-      suv: 130,
-      van: 160,
-      motorcycle: 60,
+      car: 100,
+      motorcycle: 50,
     });
     setIsModalOpen(true);
   };
@@ -83,10 +77,8 @@ export const ServicesManager: React.FC = () => {
     setCategory(srv.category);
     setDescription(srv.description || '');
     setPrices({
-      sedan: srv.basePrices.sedan || 0,
-      suv: srv.basePrices.suv || 0,
-      van: srv.basePrices.van || 0,
-      motorcycle: srv.basePrices.motorcycle || 0,
+      car: srv.basePrices.car ?? (srv.basePrices as any).sedan ?? 100,
+      motorcycle: srv.basePrices.motorcycle ?? 50,
     });
     setIsModalOpen(true);
   };
@@ -98,15 +90,19 @@ export const ServicesManager: React.FC = () => {
       return;
     }
 
+    const carPrice = Math.max(0, Number(prices.car) || 0);
+    const motoPrice = Math.max(0, Number(prices.motorcycle) || 0);
+
     const payload = {
       name: name.trim(),
       category,
       description: description.trim() || undefined,
       basePrices: {
-        sedan: Math.max(0, Number(prices.sedan) || 0),
-        suv: Math.max(0, Number(prices.suv) || 0),
-        van: Math.max(0, Number(prices.van) || 0),
-        motorcycle: Math.max(0, Number(prices.motorcycle) || 0),
+        car: carPrice,
+        motorcycle: motoPrice,
+        sedan: carPrice,
+        suv: carPrice,
+        van: carPrice,
       },
     };
 
@@ -141,21 +137,23 @@ export const ServicesManager: React.FC = () => {
   const startQuickEdit = (srv: ServiceItem) => {
     setQuickEditingId(srv.id);
     setQuickPrices({
-      sedan: srv.basePrices.sedan || 0,
-      suv: srv.basePrices.suv || 0,
-      van: srv.basePrices.van || 0,
-      motorcycle: srv.basePrices.motorcycle || 0,
+      car: srv.basePrices.car ?? (srv.basePrices as any).sedan ?? 0,
+      motorcycle: srv.basePrices.motorcycle ?? 0,
     });
   };
 
   const saveQuickEdit = async (srv: ServiceItem) => {
+    const carPrice = Math.max(0, Number(quickPrices.car) || 0);
+    const motoPrice = Math.max(0, Number(quickPrices.motorcycle) || 0);
+
     await updateService({
       ...srv,
       basePrices: {
-        sedan: Math.max(0, Number(quickPrices.sedan) || 0),
-        suv: Math.max(0, Number(quickPrices.suv) || 0),
-        van: Math.max(0, Number(quickPrices.van) || 0),
-        motorcycle: Math.max(0, Number(quickPrices.motorcycle) || 0),
+        car: carPrice,
+        motorcycle: motoPrice,
+        sedan: carPrice,
+        suv: carPrice,
+        van: carPrice,
       },
     });
     setQuickEditingId(null);
@@ -225,8 +223,7 @@ export const ServicesManager: React.FC = () => {
               <Sparkles className="w-6 h-6 text-sky-400" />
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
-              يمكنك إضافة خدمات جديدة، تعديل مسميات الخدمات، وتحديد أسعار خاصة بكل حجم سيارة (سيدان، SUV، فان،
-              موتوسيكل). تنعكس التعديلات فوراً على شاشة الكاشير وأوامر التشغيل.
+              يمكنك إضافة خدمات جديدة، تعديل مسميات الخدمات، وتحديد أسعار خاصة بكل نوع مركبة (سيارة، موتوسيكل). تنعكس التعديلات فوراً على شاشة الكاشير وأوامر التشغيل.
             </p>
           </div>
 
@@ -415,44 +412,20 @@ export const ServicesManager: React.FC = () => {
                 {isQuick ? (
                   // Quick Inline Editing Inputs
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="bg-white p-1.5 rounded-xl border border-sky-300">
-                      <label className="block text-[10px] text-slate-500 font-medium">سيدان</label>
+                    <div className="bg-white p-2 rounded-xl border border-sky-300">
+                      <label className="block text-[10px] text-slate-500 font-bold mb-0.5">🚗 سيارة</label>
                       <input
                         type="number"
                         min="0"
-                        value={quickPrices.sedan}
+                        value={quickPrices.car}
                         onChange={(e) =>
-                          setQuickPrices((prev) => ({ ...prev, sedan: Number(e.target.value) }))
+                          setQuickPrices((prev) => ({ ...prev, car: Number(e.target.value) }))
                         }
                         className="w-full font-black text-slate-900 focus:outline-none"
                       />
                     </div>
-                    <div className="bg-white p-1.5 rounded-xl border border-sky-300">
-                      <label className="block text-[10px] text-slate-500 font-medium">SUV / جيب</label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={quickPrices.suv}
-                        onChange={(e) =>
-                          setQuickPrices((prev) => ({ ...prev, suv: Number(e.target.value) }))
-                        }
-                        className="w-full font-black text-slate-900 focus:outline-none"
-                      />
-                    </div>
-                    <div className="bg-white p-1.5 rounded-xl border border-sky-300">
-                      <label className="block text-[10px] text-slate-500 font-medium">فان / نقل</label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={quickPrices.van}
-                        onChange={(e) =>
-                          setQuickPrices((prev) => ({ ...prev, van: Number(e.target.value) }))
-                        }
-                        className="w-full font-black text-slate-900 focus:outline-none"
-                      />
-                    </div>
-                    <div className="bg-white p-1.5 rounded-xl border border-sky-300">
-                      <label className="block text-[10px] text-slate-500 font-medium">موتوسيكل</label>
+                    <div className="bg-white p-2 rounded-xl border border-sky-300">
+                      <label className="block text-[10px] text-slate-500 font-bold mb-0.5">🏍️ موتوسيكل</label>
                       <input
                         type="number"
                         min="0"
@@ -467,21 +440,17 @@ export const ServicesManager: React.FC = () => {
                 ) : (
                   // Normal Price Badges
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-xl border border-slate-100">
-                      <span className="text-slate-500">سيدان:</span>
-                      <span className="font-black text-slate-900">{srv.basePrices.sedan || 0} ج.م</span>
+                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-slate-100 shadow-sm">
+                      <span className="text-slate-500 font-bold">🚗 سيارة:</span>
+                      <span className="font-black text-slate-900 font-mono">
+                        {(srv.basePrices.car ?? (srv.basePrices as any).sedan ?? 0)} ج.م
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-xl border border-slate-100">
-                      <span className="text-slate-500">SUV:</span>
-                      <span className="font-black text-slate-900">{srv.basePrices.suv || 0} ج.م</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-xl border border-slate-100">
-                      <span className="text-slate-500">فان/نقل:</span>
-                      <span className="font-black text-slate-900">{srv.basePrices.van || 0} ج.م</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-xl border border-slate-100">
-                      <span className="text-slate-500">موتوسيكل:</span>
-                      <span className="font-black text-slate-900">{srv.basePrices.motorcycle || 0} ج.م</span>
+                    <div className="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-slate-100 shadow-sm">
+                      <span className="text-slate-500 font-bold">🏍️ موتوسيكل:</span>
+                      <span className="font-black text-slate-900 font-mono">
+                        {(srv.basePrices.motorcycle || 0)} ج.م
+                      </span>
                     </div>
                   </div>
                 )}
@@ -567,28 +536,28 @@ export const ServicesManager: React.FC = () => {
                 />
               </div>
 
-              {/* Vehicle Size Pricing Box */}
+              {/* Vehicle Pricing Box */}
               <div className="bg-sky-50/60 border border-sky-100 rounded-2xl p-4 space-y-3">
                 <div className="flex items-center gap-1.5 text-sky-800 text-xs font-black">
                   <Car className="w-4 h-4 text-sky-600" />
-                  <span>تحديد الأسعار حسب حجم المركبة (بالجنيه المصري):</span>
+                  <span>تحديد الأسعار حسب نوع المركبة (بالجنيه المصري):</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      🚗 سيارة سيدان صغيرة/وسط
+                  <div className="bg-white p-3 rounded-xl border border-sky-200 shadow-sm">
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      🚗 سيارة (جميع السيارات)
                     </label>
                     <div className="relative">
                       <input
                         type="number"
                         min="0"
                         required
-                        value={prices.sedan}
+                        value={prices.car}
                         onChange={(e) =>
-                          setPrices((prev) => ({ ...prev, sedan: Number(e.target.value) }))
+                          setPrices((prev) => ({ ...prev, car: Number(e.target.value) }))
                         }
-                        className="w-full font-black text-slate-900 text-sm pl-8 pr-2 py-1 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        className="w-full font-black text-slate-900 text-sm pl-8 pr-2 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono"
                       />
                       <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                         ج.م
@@ -596,51 +565,9 @@ export const ServicesManager: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      🚙 SUV / جيب / كروس أوفر
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min="0"
-                        required
-                        value={prices.suv}
-                        onChange={(e) =>
-                          setPrices((prev) => ({ ...prev, suv: Number(e.target.value) }))
-                        }
-                        className="w-full font-black text-slate-900 text-sm pl-8 pr-2 py-1 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-                        ج.م
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      🚐 فان / نقل / ميني باص
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min="0"
-                        required
-                        value={prices.van}
-                        onChange={(e) =>
-                          setPrices((prev) => ({ ...prev, van: Number(e.target.value) }))
-                        }
-                        className="w-full font-black text-slate-900 text-sm pl-8 pr-2 py-1 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-                        ج.م
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-2.5 rounded-xl border border-sky-200 shadow-sm">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      🏍️ موتوسيكل / بيتش باجي
+                  <div className="bg-white p-3 rounded-xl border border-sky-200 shadow-sm">
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      🏍️ موتوسيكل / دراجة نارية
                     </label>
                     <div className="relative">
                       <input
@@ -651,7 +578,7 @@ export const ServicesManager: React.FC = () => {
                         onChange={(e) =>
                           setPrices((prev) => ({ ...prev, motorcycle: Number(e.target.value) }))
                         }
-                        className="w-full font-black text-slate-900 text-sm pl-8 pr-2 py-1 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        className="w-full font-black text-slate-900 text-sm pl-8 pr-2 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono"
                       />
                       <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                         ج.م

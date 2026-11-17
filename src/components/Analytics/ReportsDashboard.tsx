@@ -46,9 +46,10 @@ export const ReportsDashboard: React.FC = () => {
 
   // Vehicle size distribution
   const vehicleStats = useMemo(() => {
-    const stats: Record<string, number> = { sedan: 0, suv: 0, van: 0, motorcycle: 0 };
+    const stats: Record<string, number> = { car: 0, motorcycle: 0 };
     orders.forEach((o) => {
-      stats[o.vehicleSize] = (stats[o.vehicleSize] || 0) + 1;
+      const type = o.vehicleSize === 'motorcycle' ? 'motorcycle' : 'car';
+      stats[type] = (stats[type] || 0) + 1;
     });
     return stats;
   }, [orders]);
@@ -184,28 +185,18 @@ export const ReportsDashboard: React.FC = () => {
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
           <h3 className="font-extrabold text-sm text-slate-900 mb-4 flex items-center gap-2">
             <Car className="w-4 h-4 text-sky-600" />
-            <span>توزيع أنواع وأحجام السيارات</span>
+            <span>توزيع أنواع المركبات</span>
           </h3>
 
           <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
-              <span className="font-bold text-slate-800">🚗 سيارات سيدان وهاتشباك:</span>
-              <span className="font-mono font-bold text-slate-900">{vehicleStats.sedan} سيارة</span>
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+              <span className="font-bold text-slate-800">🚗 سيارات (جميع الأنواع):</span>
+              <span className="font-mono font-black text-slate-900 text-sm">{vehicleStats.car} سيارة</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
-              <span className="font-bold text-slate-800">🚙 دفع رباعي وSUV وكروس أوفر:</span>
-              <span className="font-mono font-bold text-slate-900">{vehicleStats.suv} سيارة</span>
-            </div>
-
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
-              <span className="font-bold text-slate-800">🚐 فان وميكروباص ونقل:</span>
-              <span className="font-mono font-bold text-slate-900">{vehicleStats.van} سيارة</span>
-            </div>
-
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100">
               <span className="font-bold text-slate-800">🏍️ دراجات نارية وموتوسيكل:</span>
-              <span className="font-mono font-bold text-slate-900">{vehicleStats.motorcycle}</span>
+              <span className="font-mono font-black text-slate-900 text-sm">{vehicleStats.motorcycle} دراجة</span>
             </div>
           </div>
         </div>

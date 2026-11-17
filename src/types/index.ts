@@ -30,7 +30,7 @@ export interface SalaryPayment {
   paidBy: string;
 }
 
-export type VehicleSize = 'sedan' | 'suv' | 'van' | 'motorcycle';
+export type VehicleSize = 'car' | 'motorcycle' | (string & {});
 
 export type ProductCategory = 'oil' | 'filter' | 'fluid' | 'wash_supply' | 'accessory' | (string & {});
 
@@ -73,7 +73,7 @@ export interface ServiceItem {
   id: string;
   name: string;
   category: 'wash' | 'oil_service' | 'detailing' | 'maintenance';
-  basePrices: Record<VehicleSize, number>;
+  basePrices: Record<string, number>;
   description?: string;
 }
 

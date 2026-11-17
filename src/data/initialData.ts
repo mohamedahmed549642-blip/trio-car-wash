@@ -58,10 +58,11 @@ export const INITIAL_SERVICES: ServiceItem[] = [
     category: 'wash',
     description: 'غسيل رغوة واكس، تنفيض داخلي، شفط مكنسة، تنظيف زجاج وتسويد كاوتش',
     basePrices: {
+      car: 90,
+      motorcycle: 50,
       sedan: 90,
       suv: 120,
       van: 150,
-      motorcycle: 50,
     },
   },
   {
@@ -70,10 +71,11 @@ export const INITIAL_SERVICES: ServiceItem[] = [
     category: 'wash',
     description: 'غسيل خارجي شامبو بريميوم، طبقة واكس مائي حماية، تنظيف كامل للداخل، تنظيف فتحات التكييف وتعطير',
     basePrices: {
+      car: 150,
+      motorcycle: 80,
       sedan: 150,
       suv: 190,
       van: 240,
-      motorcycle: 80,
     },
   },
   {
@@ -82,10 +84,11 @@ export const INITIAL_SERVICES: ServiceItem[] = [
     category: 'detailing',
     description: 'تنظيف بالبخار وإزالة البقع للفرش والسقف والكنب والأبواب والشنطة والتعقيم ضد البكتيريا',
     basePrices: {
+      car: 450,
+      motorcycle: 150,
       sedan: 450,
       suv: 600,
       van: 800,
-      motorcycle: 150,
     },
   },
   {
@@ -94,10 +97,11 @@ export const INITIAL_SERVICES: ServiceItem[] = [
     category: 'wash',
     description: 'غسيل سفلي للشاسيه بضغط عالي وغسيل محرك بالبخار بدون إتلاف الحساسات والضفيرة مع عزل سيليكون',
     basePrices: {
+      car: 130,
+      motorcycle: 70,
       sedan: 130,
       suv: 160,
       van: 200,
-      motorcycle: 70,
     },
   },
   {
@@ -106,10 +110,11 @@ export const INITIAL_SERVICES: ServiceItem[] = [
     category: 'oil_service',
     description: 'تفريغ الزيت القديم وفك وتركيب الفلتر ومراجعة منسوب السوائل (مجانية عند شراء الزيت من المركز)',
     basePrices: {
+      car: 50,
+      motorcycle: 30,
       sedan: 50,
       suv: 60,
       van: 70,
-      motorcycle: 30,
     },
   },
   {
@@ -118,10 +123,11 @@ export const INITIAL_SERVICES: ServiceItem[] = [
     category: 'maintenance',
     description: 'تشحيم البيض والجلب وتربيط ميزان وشاسيه كامل وفحص الشكمان',
     basePrices: {
+      car: 100,
+      motorcycle: 40,
       sedan: 100,
       suv: 140,
       van: 180,
-      motorcycle: 40,
     },
   },
 ];
