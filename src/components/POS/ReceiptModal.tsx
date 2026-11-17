@@ -75,10 +75,10 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ order, isOpen, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto print:p-0 print:bg-white print:static">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 print:shadow-none print:border-none print:w-full print:max-w-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto print:p-0 print:bg-white print:static">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 print:shadow-none print:border-none print:w-full print:max-w-none my-auto">
         {/* Top actions (hidden in print) */}
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between text-white print:hidden">
+        <div className="bg-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white print:hidden">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             <h3 className="font-extrabold text-base">تم حفظ أمر التشغيل بنجاح</h3>

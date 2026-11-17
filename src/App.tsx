@@ -61,7 +61,7 @@ const MainAppContent: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-8">
         {activeTab === 'pos' && (
           <POSDashboard onOpenNewOrder={() => setIsNewOrderOpen(true)} />
         )}
@@ -82,12 +82,12 @@ const MainAppContent: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-5 text-center text-xs text-slate-500 print:hidden mt-auto">
+      <footer className="bg-white border-t border-slate-200 py-4 sm:py-5 text-center text-xs text-slate-500 print:hidden mt-auto mb-16 md:mb-0">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 font-bold text-slate-700">
             <img src="/logo.png" alt="Trio Logo" className="w-6 h-6 object-contain" />
             <span>{settings.shopName}</span>
-            <span className="text-slate-400 font-normal">| {settings.slogan}</span>
+            <span className="text-slate-400 font-normal hidden sm:inline">| {settings.slogan}</span>
           </div> 
 
           {/* Masar Tech Developer Badge */}

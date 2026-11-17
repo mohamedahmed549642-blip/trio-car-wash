@@ -265,9 +265,9 @@ export const ShiftManager: React.FC = () => {
 
       {/* 3. Shift Reconciliation / Close Modal */}
       {isCloseModalOpen && currentShift && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-            <div className="bg-slate-900 px-6 py-4 flex items-center justify-between text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-auto">
+            <div className="bg-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-rose-500/20 text-rose-400 rounded-xl">
                   <Lock className="w-5 h-5" />

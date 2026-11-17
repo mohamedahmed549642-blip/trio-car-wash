@@ -145,10 +145,10 @@ export const PaySalaryModal: React.FC<PaySalaryModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 my-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200 my-auto max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 px-6 py-4 flex items-center justify-between text-white">
+        <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-2xl border border-emerald-500/30">
               <DollarSign className="w-6 h-6" />
@@ -262,7 +262,7 @@ export const PaySalaryModal: React.FC<PaySalaryModalProps> = ({ isOpen, onClose,
 
         {/* Main Content */}
         {!showHistory ? (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
             {/* Amount Input */}
             <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl">
               <div className="flex items-center justify-between mb-1.5">

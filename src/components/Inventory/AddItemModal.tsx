@@ -230,18 +230,18 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, ite
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-8">
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between text-white">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-xl bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-0 sm:my-8 max-h-[92vh] sm:max-h-[90vh] flex flex-col">
+        <div className="bg-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white shrink-0">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-sky-500/20 text-sky-400 rounded-xl">
               {itemToEdit ? <Edit2 className="w-5 h-5" /> : <PackagePlus className="w-5 h-5" />}
             </div>
             <div>
-              <h3 className="font-extrabold text-base">
+              <h3 className="font-extrabold text-sm sm:text-base">
                 {itemToEdit ? 'تعديل بيانات ورصيد الصنف بالمخزن' : 'إضافة صنف جديد إلى المخزن'}
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-[11px] sm:text-xs text-slate-400">
                 {itemToEdit
                   ? 'تعديل مباشر للكمية والأسعار والمواصفات بدون تسوية أو خصم'
                   : 'تسجيل نوع زيت جديد، فلاتر، سوائل أو مستلزمات'}
@@ -253,7 +253,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, ite
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Category Field */}
             <div>

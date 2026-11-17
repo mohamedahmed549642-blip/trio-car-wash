@@ -350,12 +350,141 @@ export const WorkersManager: React.FC = () => {
 
       {/* Workers Cards & Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="text-sm font-black text-slate-900">قائمة أفراد فريق العمل والعمال المسجلين</h2>
-          <span className="text-xs text-slate-400">يمكن لأي عامل تسجيل الدخول باستخدام اسمه ورمز الـ PIN الخاص به</span>
+          <span className="text-xs text-slate-400">يمكن لأي عامل تسجيل الدخول باستخدام اسمه وكلمة المرور الخاصة به</span>
         </div>
 
-        <div className="overflow-x-auto text-xs">
+        {/* Mobile Worker Cards (Visible on phones) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {visibleUsers.map((u) => {
+            const isOwner = u.role === 'admin';
+            const isDeveloperUser = u.role === 'developer' || u.username === 'developer' || u.id === 'user_developer';
+            const isCurrent = u.id === activeUser.id;
+            const showPin = visiblePins[u.id];
+
+            return (
+              <div key={u.id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
+                {/* Header: Name + Avatar + Role */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 ${
+                        isOwner
+                          ? 'bg-purple-100 text-purple-800'
+                          : isDeveloperUser
+                          ? 'bg-cyan-100 text-cyan-800'
+                          : 'bg-sky-100 text-sky-800'
+                      }`}
+                    >
+                      {u.name.slice(0, 1)}
+                    </div>
+                    <div>
+                      <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                        <span>{u.name}</span>
+                        {isCurrent && (
+                          <span className="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                            أنت
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-500 font-mono">@{u.username || 'user'}</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    {isDeveloperUser ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px]">
+                        مطور 💻
+                      </span>
+                    ) : isOwner ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 font-bold text-[10px]">
+                        المالك 👑
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-[10px]">
+                        فني 👷
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Details row: Job title & Phone */}
+                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs space-y-1">
+                  <div className="flex justify-between items-center text-slate-600">
+                    <span>الوظيفة:</span>
+                    <strong className="text-slate-800 font-bold">{u.jobTitle || 'فني زيوت وغسيل'}</strong>
+                  </div>
+                  {u.phone && (
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span>الهاتف:</span>
+                      <strong className="text-slate-800 font-mono">{u.phone}</strong>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-slate-600">
+                    <span>كلمة المرور:</span>
+                    <div className="inline-flex items-center gap-1 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      <span className="font-mono font-bold text-slate-800">
+                        {showPin ? (u.password || u.pinCode) : '••••'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => togglePinVisibility(u.id)}
+                        className="text-slate-400 hover:text-slate-600 cursor-pointer ml-1"
+                      >
+                        {showPin ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3 text-slate-400" />}
+                      </button>
+                    </div>
+                  </div>
+                  {(u.monthlySalary || u.dailyWage) && (
+                    <div className="flex justify-between items-center text-slate-600 pt-1 border-t border-slate-200/60">
+                      <span>الراتب المسجل:</span>
+                      <strong className="text-emerald-700 font-mono font-black">
+                        {u.monthlySalary ? `${u.monthlySalary.toLocaleString('ar-EG')} ج.م شهرياً` : `${u.dailyWage} ج.م يومية`}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions row */}
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  {!isDeveloperUser ? (
+                    <button
+                      onClick={() => handleOpenPayModal(u)}
+                      className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-600/20 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <DollarSign className="w-3.5 h-3.5" />
+                      <span>صرف راتب</span>
+                    </button>
+                  ) : <div className="flex-1" />}
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => openEditModal(u)}
+                      className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer text-xs font-bold flex items-center gap-1"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>تعديل</span>
+                    </button>
+
+                    {!isOwner && !isDeveloperUser && (
+                      <button
+                        onClick={() => handleDelete(u)}
+                        className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors cursor-pointer"
+                        title="حذف العامل"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop Table (Visible on md and up) */}
+        <div className="hidden md:block overflow-x-auto text-xs">
           <table className="w-full text-right border-collapse">
             <thead>
               <tr className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">

@@ -92,17 +92,17 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
       )}
 
       {/* Top Banner / Call to Action */}
-      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         {/* Subtle decorative glow */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-bold">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+          <div className="space-y-1.5 sm:space-y-2 max-w-xl">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] sm:text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5" />
               <span>نظام نقاط البيع والكاشير الميداني السريع</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h1 className="text-xl sm:text-3xl font-black tracking-tight text-white leading-tight">
               أوامر غسيل السيارات وتغيير الزيوت
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -113,7 +113,7 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               onClick={onOpenNewOrder}
-              className={`py-4 px-6 rounded-2xl font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 ${currentShift
+              className={`w-full sm:w-auto py-3.5 sm:py-4 px-5 sm:px-6 rounded-2xl font-black text-xs sm:text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 ${currentShift
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/30'
                 : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-amber-500/30 ring-2 ring-amber-300'
                 }`}
@@ -134,7 +134,7 @@ export const POSDashboard: React.FC<POSDashboardProps> = ({ onOpenNewOrder }) =>
         </div>
 
         {/* Live Counters strip */}
-        <div className="mt-6 pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-xs">
           <div>
             <span className="text-slate-400 block mb-0.5">أوامر اليوم:</span>
             <span className="text-xl font-black text-white font-mono">{todayOrders.length}</span>

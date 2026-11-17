@@ -113,62 +113,67 @@ export const OrdersList: React.FC = () => {
               <p>قم بإنشاء أمر تشغيل جديد من زر "أمر غسيل وزيت جديد"</p>
             </div>
           ) : (
-            <div className="overflow-x-auto text-xs">
-              <table className="w-full text-right border-collapse">
-                <thead>
-                  <tr className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
-                    <th className="py-3 px-4">رقم الفاتورة</th>
-                    <th className="py-3 px-4">السيارة واللوحة</th>
-                    <th className="py-3 px-4">العميل والهاتف</th>
-                    <th className="py-3 px-4">الخدمات والزيوت المنجزة</th>
-                    <th className="py-3 px-4 text-left">الإجمالي</th>
-                    <th className="py-3 px-4 text-center">طريقة الدفع</th>
-                    <th className="py-3 px-4 text-center">التاريخ</th>
-                    <th className="py-3 px-4 text-center">إجراءات</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredOrders.map((ord) => (
-                    <tr key={ord.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-sky-700">
-                        #{ord.orderNumber}
-                      </td>
-
-                      <td className="py-3 px-4">
-                        <div className="font-bold text-slate-900">{ord.carModel}</div>
-                        <span className="inline-block mt-0.5 px-2 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono font-bold text-[11px] text-slate-800">
+            <>
+              {/* Mobile Card Feed (Visible on phones) */}
+              <div className="md:hidden divide-y divide-slate-100">
+                {filteredOrders.map((ord) => (
+                  <div key={ord.id} className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
+                    {/* Top Row: Plate + Order # + Time */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 bg-slate-900 text-white rounded-lg font-mono font-bold text-xs tracking-wider">
                           {ord.plateNumber}
                         </span>
-                      </td>
+                        <span className="font-bold text-slate-900 text-sm">
+                          {ord.carModel}
+                        </span>
+                      </div>
+                      <span className="font-mono text-slate-400 text-xs font-bold">
+                        #{ord.orderNumber}
+                      </span>
+                    </div>
 
-                      <td className="py-3 px-4">
-                        <div className="font-bold text-slate-800">{ord.customerName || 'عميل نقدي'}</div>
+                    {/* Customer & Time */}
+                    <div className="flex items-center justify-between text-xs text-slate-500">
+                      <div>
+                        <span>العميل: <strong className="text-slate-700">{ord.customerName || 'نقدي'}</strong></span>
                         {ord.customerPhone && (
-                          <div className="font-mono text-slate-500 text-[11px]">{ord.customerPhone}</div>
+                          <span className="font-mono text-slate-400 mr-2">({ord.customerPhone})</span>
                         )}
-                      </td>
+                      </div>
+                      <span className="font-mono text-[11px] text-slate-400">
+                        {new Date(ord.createdAt).toLocaleDateString('ar-EG', {
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
 
-                      <td className="py-3 px-4 max-w-xs">
-                        <div className="space-y-0.5">
-                          {ord.services.map((s, idx) => (
-                            <div key={idx} className="text-slate-700 font-medium truncate">
-                              • {s.serviceName}
-                            </div>
-                          ))}
-                          {ord.products.map((p, idx) => (
-                            <div key={idx} className="text-amber-800 font-medium truncate text-[11px]">
-                              • {p.itemName} ({p.quantity})
-                            </div>
-                          ))}
+                    {/* Services & Products Summary */}
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs space-y-1">
+                      {ord.services.map((s, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-slate-700">
+                          <span className="truncate">• {s.serviceName}</span>
+                          <span className="font-mono font-bold text-slate-900">{s.price} ج.م</span>
                         </div>
-                      </td>
+                      ))}
+                      {ord.products.map((p, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-amber-900">
+                          <span className="truncate">🛢️ {p.itemName} ({p.quantity})</span>
+                          <span className="font-mono font-bold">{p.totalPrice} ج.م</span>
+                        </div>
+                      ))}
+                    </div>
 
-                      <td className="py-3 px-4 text-left font-mono font-black text-slate-900 text-sm">
-                        {ord.total.toLocaleString('ar-EG')} ج.م
-                      </td>
-
-                      <td className="py-3 px-4 text-center">
-                        <span className="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">
+                    {/* Bottom Row: Total, Method & Actions */}
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-black text-slate-900 font-mono">
+                          {ord.total.toLocaleString('ar-EG')} ج.م
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">
                           {ord.paymentMethod === 'cash'
                             ? 'كاش 💵'
                             : ord.paymentMethod === 'instapay'
@@ -177,41 +182,131 @@ export const OrdersList: React.FC = () => {
                             ? 'فودافون 📱'
                             : 'فيزا 💳'}
                         </span>
-                      </td>
+                      </div>
 
-                      <td className="py-3 px-4 text-center text-slate-500 font-mono text-[11px]">
-                        {new Date(ord.createdAt).toLocaleDateString('ar-EG', {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </td>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => setSelectedOrderForReceipt(ord)}
+                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>فاتورة</span>
+                        </button>
 
-                      <td className="py-3 px-4 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button
-                            onClick={() => setSelectedOrderForReceipt(ord)}
-                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
-                            title="عرض وطباعة الفاتورة"
-                          >
-                            <Printer className="w-4 h-4" />
-                          </button>
+                        <button
+                          onClick={() => handleSendOrderWhatsApp(ord)}
+                          className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <Share2 className="w-3.5 h-3.5" />
+                          <span>واتساب</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                          <button
-                            onClick={() => handleSendOrderWhatsApp(ord)}
-                            className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-colors cursor-pointer"
-                            title="إرسال الفاتورة عبر واتساب"
-                          >
-                            <Share2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
+              {/* Desktop Data Table */}
+              <div className="hidden md:block overflow-x-auto text-xs">
+                <table className="w-full text-right border-collapse">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+                      <th className="py-3 px-4">رقم الفاتورة</th>
+                      <th className="py-3 px-4">السيارة واللوحة</th>
+                      <th className="py-3 px-4">العميل والهاتف</th>
+                      <th className="py-3 px-4">الخدمات والزيوت المنجزة</th>
+                      <th className="py-3 px-4 text-left">الإجمالي</th>
+                      <th className="py-3 px-4 text-center">طريقة الدفع</th>
+                      <th className="py-3 px-4 text-center">التاريخ</th>
+                      <th className="py-3 px-4 text-center">إجراءات</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredOrders.map((ord) => (
+                      <tr key={ord.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-4 font-mono font-bold text-sky-700">
+                          #{ord.orderNumber}
+                        </td>
+
+                        <td className="py-3 px-4">
+                          <div className="font-bold text-slate-900">{ord.carModel}</div>
+                          <span className="inline-block mt-0.5 px-2 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono font-bold text-[11px] text-slate-800">
+                            {ord.plateNumber}
+                          </span>
+                        </td>
+
+                        <td className="py-3 px-4">
+                          <div className="font-bold text-slate-800">{ord.customerName || 'عميل نقدي'}</div>
+                          {ord.customerPhone && (
+                            <div className="font-mono text-slate-500 text-[11px]">{ord.customerPhone}</div>
+                          )}
+                        </td>
+
+                        <td className="py-3 px-4 max-w-xs">
+                          <div className="space-y-0.5">
+                            {ord.services.map((s, idx) => (
+                              <div key={idx} className="text-slate-700 font-medium truncate">
+                                • {s.serviceName}
+                              </div>
+                            ))}
+                            {ord.products.map((p, idx) => (
+                              <div key={idx} className="text-amber-800 font-medium truncate text-[11px]">
+                                • {p.itemName} ({p.quantity})
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+
+                        <td className="py-3 px-4 text-left font-mono font-black text-slate-900 text-sm">
+                          {ord.total.toLocaleString('ar-EG')} ج.م
+                        </td>
+
+                        <td className="py-3 px-4 text-center">
+                          <span className="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">
+                            {ord.paymentMethod === 'cash'
+                              ? 'كاش 💵'
+                              : ord.paymentMethod === 'instapay'
+                              ? 'إنستاباي ⚡'
+                              : ord.paymentMethod === 'vodafone_cash'
+                              ? 'فودافون 📱'
+                              : 'فيزا 💳'}
+                          </span>
+                        </td>
+
+                        <td className="py-3 px-4 text-center text-slate-500 font-mono text-[11px]">
+                          {new Date(ord.createdAt).toLocaleDateString('ar-EG', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </td>
+
+                        <td className="py-3 px-4 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              onClick={() => setSelectedOrderForReceipt(ord)}
+                              className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors cursor-pointer"
+                              title="عرض وطباعة الفاتورة"
+                            >
+                              <Printer className="w-4 h-4" />
+                            </button>
+
+                            <button
+                              onClick={() => handleSendOrderWhatsApp(ord)}
+                              className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-colors cursor-pointer"
+                              title="إرسال الفاتورة عبر واتساب"
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}

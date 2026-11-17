@@ -39,16 +39,16 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose }) =
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-auto">
+        <div className="bg-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-amber-500/20 text-amber-400 rounded-xl">
               <Receipt className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base">تسجيل مصروف  من الدرج</h3>
-              <p className="text-xs text-slate-400">شاي، فطار، صابون، صيانة طارئة أو نثريات</p>
+              <h3 className="font-extrabold text-sm sm:text-base">تسجيل مصروف من الدرج</h3>
+              <p className="text-[11px] sm:text-xs text-slate-400">شاي، فطار، صابون، صيانة طارئة أو نثريات</p>
             </div>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg">
@@ -56,7 +56,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose }) =
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs">
           <div>
             <label className="block font-bold text-slate-700 mb-1">
               المبلغ المصروف (ج.م) <span className="text-rose-500">*</span>

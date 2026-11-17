@@ -154,16 +154,16 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between text-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-auto">
+        <div className="bg-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-rose-500/20 text-rose-400 rounded-xl">
               <MinusCircle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base">خصم أو تسوية رصيد من المخزن (Reduce Stock)</h3>
-              <p className="text-xs text-slate-400">تسجيل توالف أو عجز جرد أو استهلاك داخلي للمغسلة</p>
+              <h3 className="font-extrabold text-sm sm:text-base">خصم أو تسوية رصيد من المخزن (Reduce Stock)</h3>
+              <p className="text-[11px] sm:text-xs text-slate-400">تسجيل توالف أو عجز جرد أو استهلاك داخلي للمغسلة</p>
             </div>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg">
@@ -171,7 +171,7 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs">
           {preselectedItem && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between">
               <div>

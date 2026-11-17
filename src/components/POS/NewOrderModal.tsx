@@ -309,26 +309,26 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 my-3 sm:my-8">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/80 backdrop-blur-sm overflow-hidden">
+      <div className="relative w-full max-w-4xl bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden border border-slate-200 h-[96vh] sm:h-auto max-h-[96vh] sm:max-h-[90vh] flex flex-col my-0 sm:my-8">
         {/* Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 px-6 py-4 flex items-center justify-between text-white border-b border-slate-800">
+        <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between text-white border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-xl bg-sky-500/20 text-sky-400">
               <Car className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-black text-lg">أمر تشغيل وكاشير جديد</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="font-black text-base sm:text-lg">أمر تشغيل وكاشير جديد</h2>
+              <p className="text-[11px] sm:text-xs text-slate-400">
                 تسجيل غسيل وتغيير زيوت مع الخصم التلقائي من المخزن
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
@@ -399,7 +399,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             </form>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} autoComplete="off" className="p-4 sm:p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} autoComplete="off" className="p-3.5 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1">
           {/* 1. Vehicle and Customer Section */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <h3 className="text-sm font-black text-slate-800 mb-3 flex items-center gap-2">
@@ -566,8 +566,8 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             </div>
 
             {/* Product Category Filters and Search */}
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 gap-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs">
+              <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 gap-1 overflow-x-auto no-scrollbar max-w-full">
                 {[
                   { id: 'all', label: 'الكل' },
                   { id: 'oil', label: '🛢️ زيوت محركات' },
@@ -579,9 +579,9 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
                     key={c.id}
                     type="button"
                     onClick={() => setProductCategoryFilter(c.id as any)}
-                    className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg font-bold transition-colors cursor-pointer whitespace-nowrap ${
                       productCategoryFilter === c.id
-                        ? 'bg-slate-900 text-white'
+                        ? 'bg-slate-900 text-white shadow-sm'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -595,7 +595,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
                 placeholder="بحث في المخزن (مثال: Shell, 5W-40, فلتر كيا)..."
                 value={productSearch}
                 onChange={(e) => setProductSearch(e.target.value)}
-                className="flex-1 bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full sm:flex-1 bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
 
@@ -807,15 +807,15 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
             </div>
 
             {/* Total Display */}
-            <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
+            <div className="pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
               <div className="text-xs text-slate-400 space-y-0.5">
                 <div>المجموع الفرعي: {subtotal.toLocaleString('ar-EG')} ج.م</div>
                 {discount > 0 && <div>الخصم المطبق: {discount.toLocaleString('ar-EG')} ج.م</div>}
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <span className="text-xs text-slate-400 block">المبلغ الإجمالي للدفع:</span>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="text-right sm:text-left flex items-center justify-between sm:block">
+                  <span className="text-xs text-slate-400 block">الإجمالي النهائي:</span>
                   <span className="text-2xl sm:text-3xl font-black text-sky-400 font-mono">
                     {grandTotal.toLocaleString('ar-EG')} ج.م
                   </span>
@@ -824,7 +824,7 @@ export const NewOrderModal: React.FC<NewOrderModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black py-3 px-6 rounded-xl shadow-xl shadow-emerald-500/25 active:scale-95 transition-all text-sm cursor-pointer disabled:opacity-50"
+                  className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black py-3.5 sm:py-3 px-6 rounded-xl shadow-xl shadow-emerald-500/25 active:scale-95 transition-all text-sm cursor-pointer disabled:opacity-50 text-center"
                 >
                   {isSubmitting ? 'جاري الحفظ...' : 'حفظ وإصدار الفاتورة 🚀'}
                 </button>
