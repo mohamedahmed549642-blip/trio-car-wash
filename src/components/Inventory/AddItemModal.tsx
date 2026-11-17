@@ -1,7 +1,46 @@
-import React, { useState } from 'react';
-import { X, PackagePlus, Fuel } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { X, PackagePlus, Fuel, Plus } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ProductCategory } from '../../types';
+
+interface CategoryOption {
+  id: string;
+  label: string;
+  defaultUnit: string;
+  isCustom?: boolean;
+}
+
+const DEFAULT_CATEGORIES: CategoryOption[] = [
+  { id: 'oil', label: '🛢️ زيت محرك', defaultUnit: 'جركن 4 لتر' },
+  { id: 'filter', label: '⚙️ فلتر سيارة', defaultUnit: 'قطعة' },
+  { id: 'fluid', label: '💧 سائل ردياتير / فرامل / باور', defaultUnit: 'جركن 4 لتر' },
+  { id: 'wash_supply', label: '🧼 مستلزمات غسيل وصابون', defaultUnit: 'قطعة' },
+  { id: 'accessory', label: '🌲 معطرات واكسسوارات', defaultUnit: 'قطعة' },
+];
+
+const DEFAULT_BRANDS: string[] = [
+  'Shell',
+  'Mobil',
+  'TotalEnergies',
+  'Castrol',
+  'Motul',
+  'Valvoline',
+  'Liqui Moly',
+  'Mannol',
+  'Petronas',
+  'Toyota OEM',
+  'Hyundai / Kia OEM',
+  'Areon',
+  'Flamingo',
+  'Abro',
+  'K2',
+  'Sonax',
+  '3M',
+  'Bosch',
+  'Denso',
+  'Ravenol',
+  'Aisin',
+];
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -9,7 +48,7 @@ interface AddItemModalProps {
 }
 
 export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) => {
-  const { addNewItem } = useApp();
+  const { addNewItem, inventory } = useApp();
 
   const [name, setName] = useState('');
   const [brand, setBrand] = useState('Shell');
@@ -24,6 +63,83 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) =
   const [unit, setUnit] = useState('جركن 4 لتر');
   const [barcode, setBarcode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Custom Categories
+  const [customCategories, setCustomCategories] = useState<CategoryOption[]>(() => {
+    try {
+      const saved = localStorage.getItem('trio_custom_categories');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  // Custom Brands
+  const [customBrands, setCustomBrands] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('trio_custom_brands');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
+  const [isAddingBrand, setIsAddingBrand] = useState(false);
+  const [newBrandName, setNewBrandName] = useState('');
+
+  // Merge default, inventory, and custom brands
+  const allBrands = useMemo(() => {
+    const fromInv = inventory.map((i) => i.brand?.trim()).filter(Boolean);
+    const set = new Set<string>([...DEFAULT_BRANDS, ...fromInv, ...customBrands]);
+    return Array.from(set);
+  }, [inventory, customBrands]);
+
+  // Merge default and custom categories
+  const allCategories = useMemo(() => {
+    return [...DEFAULT_CATEGORIES, ...customCategories];
+  }, [customCategories]);
+
+  const handleAddNewBrand = () => {
+    const clean = newBrandName.trim();
+    if (!clean) return;
+
+    if (!allBrands.includes(clean)) {
+      const updated = [...customBrands, clean];
+      setCustomBrands(updated);
+      localStorage.setItem('trio_custom_brands', JSON.stringify(updated));
+    }
+    setBrand(clean);
+    setNewBrandName('');
+    setIsAddingBrand(false);
+  };
+
+  const handleAddNewCategory = () => {
+    const clean = newCategoryName.trim();
+    if (!clean) return;
+
+    const exists = allCategories.some(
+      (c) => c.label.toLowerCase().includes(clean.toLowerCase())
+    );
+    if (exists) {
+      alert('هذا التصنيف موجود بالفعل.');
+      return;
+    }
+
+    const newCat: CategoryOption = {
+      id: 'cat_' + Date.now(),
+      label: '🏷️ ' + clean,
+      defaultUnit: 'قطعة',
+      isCustom: true,
+    };
+
+    const updated = [...customCategories, newCat];
+    setCustomCategories(updated);
+    localStorage.setItem('trio_custom_categories', JSON.stringify(updated));
+
+    setCategory(newCat.id);
+    setUnit(newCat.defaultUnit);
+    setNewCategoryName('');
+    setIsAddingCategory(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,39 +196,170 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) =
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs max-h-[80vh] overflow-y-auto">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Category Field */}
             <div>
-              <label className="block font-bold text-slate-700 mb-1">تصنيف الصنف:</label>
-              <select
-                value={category}
-                onChange={(e) => {
-                  const cat = e.target.value as ProductCategory;
-                  setCategory(cat);
-                  if (cat === 'oil') setUnit('جركن 4 لتر');
-                  else if (cat === 'filter') setUnit('قطعة');
-                  else if (cat === 'fluid') setUnit('جركن 4 لتر');
-                  else setUnit('قطعة');
-                }}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-sky-500 focus:outline-none"
-              >
-                <option value="oil">🛢️ زيت محرك</option>
-                <option value="filter">⚙️ فلتر سيارة</option>
-                <option value="fluid">💧 سائل ردياتير / فرامل / باور</option>
-                <option value="wash_supply">🧼 مستلزمات غسيل وصابون</option>
-                <option value="accessory">🌲 معطرات واكسسوارات</option>
-              </select>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-bold text-slate-700">تصنيف الصنف:</label>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCategory(!isAddingCategory)}
+                  className="text-sky-600 hover:text-sky-700 text-[11px] font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>{isAddingCategory ? 'إلغاء' : '+ إضافة تصنيف'}</span>
+                </button>
+              </div>
+
+              {isAddingCategory ? (
+                <div className="flex items-center gap-1.5 p-1 bg-sky-50 rounded-xl border border-sky-300 animate-in fade-in">
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="اسم التصنيف الجديد (مثال: شحوم، أدوات تلميع)..."
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddNewCategory();
+                      }
+                    }}
+                    className="flex-1 bg-white border border-sky-300 rounded-lg px-2.5 py-1 text-slate-800 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewCategory}
+                    className="px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0"
+                  >
+                    حفظ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingCategory(false);
+                      setNewCategoryName('');
+                    }}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <select
+                    value={category}
+                    onChange={(e) => {
+                      const selectedVal = e.target.value;
+                      setCategory(selectedVal);
+                      const found = allCategories.find((c) => c.id === selectedVal);
+                      if (found) {
+                        setUnit(found.defaultUnit);
+                      } else if (selectedVal === 'oil') setUnit('جركن 4 لتر');
+                      else setUnit('قطعة');
+                    }}
+                    className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                  >
+                    <optgroup label="التصنيفات الأساسية">
+                      {DEFAULT_CATEGORIES.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                    {customCategories.length > 0 && (
+                      <optgroup label="تصنيفات مخصصة مضافة">
+                        {customCategories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingCategory(true)}
+                    className="p-2 bg-sky-100 hover:bg-sky-200 text-sky-700 rounded-xl transition-colors cursor-pointer shrink-0"
+                    title="إضافة تصنيف جديد"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
+            {/* Brand / Company Field */}
             <div>
-              <label className="block font-bold text-slate-700 mb-1">الشركة / الماركة:</label>
-              <input
-                type="text"
-                required
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                placeholder="Shell, Mobil, Total, Toyota OEM..."
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-sky-500 focus:outline-none"
-              />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-bold text-slate-700">الشركة / الماركة:</label>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingBrand(!isAddingBrand)}
+                  className="text-sky-600 hover:text-sky-700 text-[11px] font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>{isAddingBrand ? 'إلغاء' : '+ إضافة شركة'}</span>
+                </button>
+              </div>
+
+              {isAddingBrand ? (
+                <div className="flex items-center gap-1.5 p-1 bg-sky-50 rounded-xl border border-sky-300 animate-in fade-in">
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="اسم الشركة الجديدة (مثال: Ravenol, Bosch)..."
+                    value={newBrandName}
+                    onChange={(e) => setNewBrandName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddNewBrand();
+                      }
+                    }}
+                    className="flex-1 bg-white border border-sky-300 rounded-lg px-2.5 py-1 text-slate-800 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewBrand}
+                    className="px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0"
+                  >
+                    حفظ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingBrand(false);
+                      setNewBrandName('');
+                    }}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <select
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                  >
+                    {allBrands.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingBrand(true)}
+                    className="p-2 bg-sky-100 hover:bg-sky-200 text-sky-700 rounded-xl transition-colors cursor-pointer shrink-0"
+                    title="إضافة شركة / ماركة جديدة للقائمة"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

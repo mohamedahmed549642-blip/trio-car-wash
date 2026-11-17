@@ -21,7 +21,30 @@ import { useApp } from '../../context/AppContext';
 import { UserProfile, UserRole } from '../../types';
 
 export const WorkersManager: React.FC = () => {
-  const { users, activeUser, isAdmin, addUser, updateUser, deleteUser } = useApp();
+  const {
+    users,
+    activeUser,
+    isAdmin,
+    isDeveloperUnlocked,
+    addUser,
+    updateUser,
+    deleteUser,
+    updateDeveloperPassword,
+  } = useApp();
+
+  const isDev =
+    isDeveloperUnlocked ||
+    activeUser.role === 'developer' ||
+    activeUser.username === 'developer';
+
+  // Filter users: Developer account is strictly visible ONLY to the developer himself
+  const visibleUsers = users.filter((u) => {
+    const isUserDev = u.role === 'developer' || u.username === 'developer';
+    if (isUserDev) {
+      return isDev;
+    }
+    return true;
+  });
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
@@ -56,6 +79,12 @@ export const WorkersManager: React.FC = () => {
   };
 
   const openEditModal = (user: UserProfile) => {
+    const isTargetDev = user.role === 'developer' || user.username === 'developer';
+    if (isTargetDev && !isDev) {
+      alert('لا يمكن تعديل أو رؤية حساب مطور النظام إلا بواسطة المطور نفسه.');
+      return;
+    }
+
     setEditingUser(user);
     setName(user.name);
     setUsername(user.username || (user.role === 'admin' ? 'owner' : 'worker'));
@@ -82,21 +111,40 @@ export const WorkersManager: React.FC = () => {
       return;
     }
 
+    if (role === 'developer' && !isDev) {
+      alert('غير مصرح لك بتعيين صلاحية مطور النظام.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       if (editingUser) {
+        const isEditingDev =
+          editingUser.role === 'developer' || editingUser.username === 'developer';
+
+        if (isEditingDev && !isDev) {
+          alert('غير مصرح لك بتعديل حساب مطور النظام.');
+          return;
+        }
+
         await updateUser({
           ...editingUser,
           name: name.trim(),
           username: username.trim().toLowerCase(),
           password: password.trim(),
-          role,
+          role: isEditingDev ? 'developer' : role,
           jobTitle: jobTitle.trim(),
           phone: phone.trim(),
           pinCode: password.trim(),
           dailyWage: dailyWage || 0,
         });
-        alert('تم تعديل بيانات العامل بنجاح!');
+
+        // If the developer changed their password, synchronize settings developerPassword
+        if (isEditingDev) {
+          await updateDeveloperPassword(password.trim());
+        }
+
+        alert('تم تعديل البيانات بنجاح!');
       } else {
         await addUser({
           name: name.trim(),
@@ -122,6 +170,10 @@ export const WorkersManager: React.FC = () => {
   const handleDelete = async (user: UserProfile) => {
     if (user.id === activeUser.id) {
       alert('لا يمكنك حذف الحساب النشط حالياً!');
+      return;
+    }
+    if (user.role === 'developer' || user.username === 'developer') {
+      alert('لا يمكن حذف حساب مطور النظام!');
       return;
     }
     if (user.role === 'admin' && users.filter((u) => u.role === 'admin').length <= 1) {
@@ -153,8 +205,8 @@ export const WorkersManager: React.FC = () => {
     );
   }
 
-  const workersCount = users.filter((u) => u.role === 'cashier').length;
-  const ownersCount = users.filter((u) => u.role === 'admin').length;
+  const workersCount = visibleUsers.filter((u) => u.role === 'cashier').length;
+  const ownersCount = visibleUsers.filter((u) => u.role === 'admin').length;
 
   return (
     <div className="space-y-6">
@@ -188,7 +240,7 @@ export const WorkersManager: React.FC = () => {
           <div>
             <span className="text-xs font-bold text-slate-500 block mb-1">إجمالي فريق العمل</span>
             <div className="text-2xl font-black text-slate-900 font-mono">
-              {users.length} <span className="text-xs text-slate-400">فرد</span>
+              {visibleUsers.length} <span className="text-xs text-slate-400">فرد</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">

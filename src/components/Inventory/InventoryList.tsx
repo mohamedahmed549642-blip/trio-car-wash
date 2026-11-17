@@ -60,6 +60,35 @@ export const InventoryList: React.FC = () => {
 
   const expectedProfit = totalRetailValue - totalCostValue;
 
+  // Category tabs including default and custom categories
+  const categoryTabs = useMemo(() => {
+    let custom: { id: string; label: string }[] = [];
+    try {
+      const saved = localStorage.getItem('trio_custom_categories');
+      if (saved) custom = JSON.parse(saved);
+    } catch {}
+
+    const defaultIds = new Set(['all', 'oil', 'filter', 'fluid', 'wash_supply', 'accessory']);
+    const customFromInv = inventory
+      .map((i) => i.category)
+      .filter((c) => c && !defaultIds.has(c) && !custom.some((x) => x.id === c));
+    const uniqueInvCats = Array.from(new Set(customFromInv)).map((c) => ({
+      id: c,
+      label: `🏷️ ${c}`,
+    }));
+
+    return [
+      { id: 'all', label: 'الكل' },
+      { id: 'oil', label: '🛢️ زيوت' },
+      { id: 'filter', label: '⚙️ فلاتر' },
+      { id: 'fluid', label: '💧 سوائل' },
+      { id: 'wash_supply', label: '🧼 صابون ومغسلة' },
+      { id: 'accessory', label: '🌲 معطرات' },
+      ...custom.map((c) => ({ id: c.id, label: c.label })),
+      ...uniqueInvCats,
+    ];
+  }, [inventory]);
+
   // Filter items
   const filteredItems = useMemo(() => {
     return inventory.filter((item) => {
@@ -233,14 +262,7 @@ export const InventoryList: React.FC = () => {
 
           {/* Category Tabs */}
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl overflow-x-auto">
-            {[
-              { id: 'all', label: 'الكل' },
-              { id: 'oil', label: '🛢️ زيوت' },
-              { id: 'filter', label: '⚙️ فلاتر' },
-              { id: 'fluid', label: '💧 سوائل' },
-              { id: 'wash_supply', label: '🧼 صابون ومغسلة' },
-              { id: 'accessory', label: '🌲 معطرات' },
-            ].map((cat) => (
+            {categoryTabs.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}

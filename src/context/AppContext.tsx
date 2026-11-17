@@ -753,6 +753,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const updateUser = async (user: UserProfile): Promise<void> => {
+    const target = users.find((u) => u.id === user.id);
+    const isCallerDev =
+      isDeveloperUnlocked ||
+      currentUser?.role === 'developer' ||
+      currentUser?.username === 'developer';
+
+    // Prevent anyone other than the developer from changing developer's account or promoting to developer
+    if ((target?.role === 'developer' || target?.username === 'developer' || user.role === 'developer') && !isCallerDev) {
+      console.warn('Unauthorized attempt to modify developer account blocked.');
+      return;
+    }
+
     const updated = users.map((u) => (u.id === user.id ? user : u));
     setUsers(updated);
     await storage.saveUsers(updated);
@@ -768,6 +780,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (target?.role === 'admin' && users.filter((u) => u.role === 'admin').length <= 1) {
       return false; // لا يمكن مسح المالك الوحيد
     }
+    const isCallerDev =
+      isDeveloperUnlocked ||
+      currentUser?.role === 'developer' ||
+      currentUser?.username === 'developer';
+
+    if ((target?.role === 'developer' || target?.username === 'developer') && !isCallerDev) {
+      console.warn('Unauthorized attempt to delete developer account blocked.');
+      return false;
+    }
+
     const updated = users.filter((u) => u.id !== userId);
     setUsers(updated);
     await storage.saveUsers(updated);

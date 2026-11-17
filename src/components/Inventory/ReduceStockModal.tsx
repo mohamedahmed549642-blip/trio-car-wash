@@ -1,7 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { X, MinusCircle, AlertTriangle, PackageCheck } from 'lucide-react';
+import { X, MinusCircle, AlertTriangle, PackageCheck, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { InventoryItem, StockMovementType } from '../../types';
+
+interface DeductionOption {
+  id: string;
+  label: string;
+  defaultReason: string;
+  type: StockMovementType;
+  isCustom?: boolean;
+}
+
+const DEFAULT_DEDUCTION_OPTIONS: DeductionOption[] = [
+  { id: 'deduction', label: 'خصم يدوي / سحب من المخزن', defaultReason: 'خصم يدوي من المخزن', type: 'deduction' },
+  { id: 'adjustment', label: 'تسوية جردية (عجز جرد أو مطابقة)', defaultReason: 'تسوية جردية ومطابقة رصيد', type: 'adjustment' },
+  { id: 'waste', label: 'تالف أو عبوة مسربة / منتهية', defaultReason: 'تالف أو عبوة مسربة / كسر', type: 'waste' },
+  { id: 'service_usage', label: 'استهلاك داخلي في المغسلة', defaultReason: 'استهلاك داخلي في تشغيل المغسلة', type: 'service_usage' },
+  { id: 'sale', label: 'بيع خارجي مباشر', defaultReason: 'بيع مباشر نقدي للعميل', type: 'sale' },
+];
 
 interface ReduceStockModalProps {
   isOpen: boolean;
@@ -20,9 +36,25 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
     preselectedItem?.id || (inventory[0]?.id || '')
   );
   const [quantity, setQuantity] = useState<number>(1);
-  const [movementType, setMovementType] = useState<StockMovementType>('deduction');
+  const [movementType, setMovementType] = useState<string>('deduction');
   const [reason, setReason] = useState<string>('خصم يدوي من المخزن');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Custom deduction options loaded from localStorage
+  const [customOptions, setCustomOptions] = useState<DeductionOption[]>(() => {
+    try {
+      const saved = localStorage.getItem('trio_custom_deduction_types');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn('Error loading custom deduction types:', e);
+    }
+    return [];
+  });
+
+  const [isAddingCustomType, setIsAddingCustomType] = useState(false);
+  const [newCustomTypeInput, setNewCustomTypeInput] = useState('');
+
+  const allDeductionOptions = [...DEFAULT_DEDUCTION_OPTIONS, ...customOptions];
 
   // Synchronize selected item and fields whenever modal opens or preselectedItem changes
   useEffect(() => {
@@ -35,10 +67,61 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
       setQuantity(1);
       setMovementType('deduction');
       setReason('خصم يدوي من المخزن');
+      setIsAddingCustomType(false);
+      setNewCustomTypeInput('');
     }
   }, [isOpen, preselectedItem, inventory]);
 
   const selectedItem = inventory.find((i) => i.id === selectedItemId) || preselectedItem || inventory[0];
+
+  const handleAddNewDeductionType = () => {
+    const clean = newCustomTypeInput.trim();
+    if (!clean) return;
+
+    const exists = allDeductionOptions.some(
+      (o) => o.label.toLowerCase() === clean.toLowerCase()
+    );
+    if (exists) {
+      alert('نوع حركة الخصم هذا موجود بالفعل في القائمة.');
+      return;
+    }
+
+    const newOpt: DeductionOption = {
+      id: 'custom_' + Date.now(),
+      label: clean,
+      defaultReason: clean,
+      type: 'deduction',
+      isCustom: true,
+    };
+
+    const updated = [...customOptions, newOpt];
+    setCustomOptions(updated);
+    localStorage.setItem('trio_custom_deduction_types', JSON.stringify(updated));
+
+    setMovementType(newOpt.id);
+    setReason(clean);
+    setNewCustomTypeInput('');
+    setIsAddingCustomType(false);
+  };
+
+  const handleDeleteCustomOption = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = customOptions.filter((o) => o.id !== id);
+    setCustomOptions(updated);
+    localStorage.setItem('trio_custom_deduction_types', JSON.stringify(updated));
+    if (movementType === id) {
+      setMovementType('deduction');
+      setReason('خصم يدوي من المخزن');
+    }
+  };
+
+  const handleMovementTypeChange = (val: string) => {
+    setMovementType(val);
+    const target = allDeductionOptions.find((o) => o.id === val);
+    if (target) {
+      setReason(target.defaultReason);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +135,12 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
       return;
     }
 
+    const selectedOpt = allDeductionOptions.find((o) => o.id === movementType);
+    const resolvedType = (selectedOpt?.type || (movementType.startsWith('custom_') ? 'deduction' : movementType)) as StockMovementType;
+
     setIsSubmitting(true);
     try {
-      await reduceStock(selectedItemId, quantity, reason, movementType);
+      await reduceStock(selectedItemId, quantity, reason, resolvedType);
       alert(`تم خصم ${quantity} ${selectedItem?.unit || 'وحدة'} بنجاح من رصيد المخزن.`);
       onClose();
     } catch (err) {
@@ -130,7 +216,7 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-slate-700 mb-1">
                 الكمية المراد خصمها <span className="text-rose-500">*</span>
@@ -147,26 +233,86 @@ export const ReduceStockModal: React.FC<ReduceStockModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">نوع حركة الخصم:</label>
-              <select
-                value={movementType}
-                onChange={(e) => {
-                  const val = e.target.value as StockMovementType;
-                  setMovementType(val);
-                  if (val === 'deduction' && reason === 'تسوية عجز جردي') setReason('خصم يدوي من المخزن');
-                  if (val === 'adjustment') setReason('تسوية جردية ومطابقة رصيد');
-                  if (val === 'waste') setReason('تالف أو عبوة مسربة / كسر');
-                  if (val === 'service_usage') setReason('استهلاك داخلي في تشغيل المغسلة');
-                  if (val === 'sale') setReason('بيع مباشر نقدي للعميل');
-                }}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none"
-              >
-                <option value="deduction">خصم يدوي / سحب من المخزن</option>
-                <option value="adjustment">تسوية جردية (عجز جرد أو مطابقة)</option>
-                <option value="waste">تالف أو عبوة مسربة / منتهية</option>
-                <option value="service_usage">استهلاك داخلي في المغسلة</option>
-                <option value="sale">بيع خارجي مباشر</option>
-              </select>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-bold text-slate-700">نوع حركة الخصم:</label>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCustomType(!isAddingCustomType)}
+                  className="text-rose-600 hover:text-rose-700 text-[11px] font-extrabold flex items-center gap-1 cursor-pointer hover:underline"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>{isAddingCustomType ? 'إلغاء' : '+ إضافة نوع'}</span>
+                </button>
+              </div>
+
+              {isAddingCustomType ? (
+                <div className="flex items-center gap-1.5 p-1 bg-rose-50 rounded-xl border border-rose-300 animate-in fade-in">
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="اكتب نوع الحركة الجديد..."
+                    value={newCustomTypeInput}
+                    onChange={(e) => setNewCustomTypeInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddNewDeductionType();
+                      }
+                    }}
+                    className="flex-1 bg-white border border-rose-300 rounded-lg px-2.5 py-1 text-slate-800 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewDeductionType}
+                    className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0"
+                  >
+                    حفظ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingCustomType(false);
+                      setNewCustomTypeInput('');
+                    }}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <select
+                    value={movementType}
+                    onChange={(e) => handleMovementTypeChange(e.target.value)}
+                    className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                  >
+                    <optgroup label="أنواع حركات الخصم الأساسية">
+                      {DEFAULT_DEDUCTION_OPTIONS.map((opt) => (
+                        <option key={opt.id} value={opt.id}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </optgroup>
+                    {customOptions.length > 0 && (
+                      <optgroup label="أنواع مخصصة مضافة">
+                        {customOptions.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            ⭐ {opt.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingCustomType(true)}
+                    className="p-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-xl transition-colors cursor-pointer shrink-0"
+                    title="إضافة نوع حركة خصم جديد للقائمة"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

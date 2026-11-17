@@ -15,7 +15,7 @@ export interface UserProfile {
 
 export type VehicleSize = 'sedan' | 'suv' | 'van' | 'motorcycle';
 
-export type ProductCategory = 'oil' | 'filter' | 'fluid' | 'wash_supply' | 'accessory';
+export type ProductCategory = 'oil' | 'filter' | 'fluid' | 'wash_supply' | 'accessory' | (string & {});
 
 export interface InventoryItem {
   id: string;
@@ -34,7 +34,7 @@ export interface InventoryItem {
   compatibleModels?: string[]; // e.g. فلاتر هيونداي / كيا / تويوتا
 }
 
-export type StockMovementType = 'restock' | 'sale' | 'service_usage' | 'adjustment' | 'waste' | 'deduction';
+export type StockMovementType = 'restock' | 'sale' | 'service_usage' | 'adjustment' | 'waste' | 'deduction' | (string & {});
 
 export interface StockMovement {
   id: string;
