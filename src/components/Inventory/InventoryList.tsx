@@ -14,6 +14,8 @@ import {
   PackagePlus,
   Eye,
   EyeOff,
+  Edit2,
+  Trash2,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { InventoryItem, ProductCategory } from '../../types';
@@ -23,7 +25,7 @@ import { AddItemModal } from './AddItemModal';
 import { MovementHistoryModal } from './MovementHistoryModal';
 
 export const InventoryList: React.FC = () => {
-  const { inventory, lowStockItems, isAdmin } = useApp();
+  const { inventory, lowStockItems, isAdmin, deleteItem } = useApp();
 
   // Modals state
   const [isRestockOpen, setIsRestockOpen] = useState(false);
@@ -31,6 +33,7 @@ export const InventoryList: React.FC = () => {
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [targetItem, setTargetItem] = useState<InventoryItem | null>(null);
+  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +50,26 @@ export const InventoryList: React.FC = () => {
   const handleOpenReduce = (item?: InventoryItem) => {
     setTargetItem(item || null);
     setIsReduceOpen(true);
+  };
+
+  const handleOpenAdd = () => {
+    setEditingItem(null);
+    setIsAddItemOpen(true);
+  };
+
+  const handleOpenEdit = (item: InventoryItem) => {
+    setEditingItem(item);
+    setIsAddItemOpen(true);
+  };
+
+  const handleDeleteItem = async (item: InventoryItem) => {
+    if (
+      confirm(
+        `⚠️ تأكيد الحذف المباشر:\nهل أنت متأكد من حذف الصنف "${item.name}" تماماً من المخزن؟\nلن يتم خصم مبالغ مالية أو تسجيل حركات تسوية.`
+      )
+    ) {
+      await deleteItem(item.id);
+    }
   };
 
   // Inventory valuation stats
@@ -228,7 +251,7 @@ export const InventoryList: React.FC = () => {
 
             {isAdmin && (
               <button
-                onClick={() => setIsAddItemOpen(true)}
+                onClick={handleOpenAdd}
                 className="inline-flex items-center gap-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow-md shadow-sky-600/20 active:scale-95 transition-all cursor-pointer"
               >
                 <PackagePlus className="w-4 h-4" />
@@ -403,6 +426,15 @@ export const InventoryList: React.FC = () => {
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center gap-1.5">
                           <button
+                            onClick={() => handleOpenEdit(item)}
+                            title="تعديل بيانات ورصيد الصنف مباشرة بدون تسوية أو خصم"
+                            className="p-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 transition-colors cursor-pointer flex items-center gap-1 font-bold text-[11px]"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            <span>تعديل</span>
+                          </button>
+
+                          <button
                             onClick={() => handleOpenRestock(item)}
                             title="إضافة وتوريد رصيد"
                             className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors cursor-pointer flex items-center gap-1 font-bold text-[11px]"
@@ -419,6 +451,16 @@ export const InventoryList: React.FC = () => {
                             <Minus className="w-3.5 h-3.5" />
                             <span>خصم</span>
                           </button>
+
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleDeleteItem(item)}
+                              title="حذف الصنف تماماً من المخزن بدون تسوية أو خصم مالي"
+                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-500 transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -443,7 +485,14 @@ export const InventoryList: React.FC = () => {
         onClose={() => setIsReduceOpen(false)}
         preselectedItem={targetItem}
       />
-      <AddItemModal isOpen={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} />
+      <AddItemModal
+        isOpen={isAddItemOpen}
+        onClose={() => {
+          setIsAddItemOpen(false);
+          setEditingItem(null);
+        }}
+        itemToEdit={editingItem}
+      />
       <MovementHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
     </div>
   );

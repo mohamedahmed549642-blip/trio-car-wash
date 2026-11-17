@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import { X, PackagePlus, Fuel, Plus } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { X, PackagePlus, Fuel, Plus, Edit2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { ProductCategory } from '../../types';
+import { ProductCategory, InventoryItem } from '../../types';
 
 interface CategoryOption {
   id: string;
@@ -45,10 +45,11 @@ const DEFAULT_BRANDS: string[] = [
 interface AddItemModalProps {
   isOpen: boolean;
   onClose: () => void;
+  itemToEdit?: InventoryItem | null;
 }
 
-export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) => {
-  const { addNewItem, inventory } = useApp();
+export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, itemToEdit }) => {
+  const { addNewItem, updateItem, inventory } = useApp();
 
   const [name, setName] = useState('');
   const [brand, setBrand] = useState('Shell');
@@ -63,6 +64,39 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) =
   const [unit, setUnit] = useState('جركن 4 لتر');
   const [barcode, setBarcode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Sync form state when editing an existing item or creating a new one
+  useEffect(() => {
+    if (itemToEdit) {
+      setName(itemToEdit.name);
+      setBrand(itemToEdit.brand);
+      setCategory(itemToEdit.category);
+      setViscosity(itemToEdit.viscosity || '5W-40');
+      setOilKmType(itemToEdit.oilKmType || 10000);
+      setPackageType(itemToEdit.packageType || 'can_4L');
+      setStockQuantity(itemToEdit.stockQuantity || 0);
+      setMinStockAlert(itemToEdit.minStockAlert || 5);
+      setCostPrice(itemToEdit.costPrice || 0);
+      setSellingPrice(itemToEdit.sellingPrice || 0);
+      setUnit(itemToEdit.unit || 'قطعة');
+      setBarcode(itemToEdit.barcode || '');
+    } else {
+      setName('');
+      setBrand('Shell');
+      setCategory('oil');
+      setViscosity('5W-40');
+      setOilKmType(10000);
+      setPackageType('can_4L');
+      setStockQuantity(10);
+      setMinStockAlert(5);
+      setCostPrice(1500);
+      setSellingPrice(1900);
+      setUnit('جركن 4 لتر');
+      setBarcode('');
+    }
+    setIsAddingCategory(false);
+    setIsAddingBrand(false);
+  }, [itemToEdit, isOpen]);
 
   // Custom Categories
   const [customCategories, setCustomCategories] = useState<CategoryOption[]>(() => {
@@ -150,26 +184,44 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) =
 
     setIsSubmitting(true);
     try {
-      await addNewItem({
-        name: name.trim(),
-        brand: brand.trim(),
-        category,
-        viscosity: category === 'oil' ? viscosity : undefined,
-        oilKmType: category === 'oil' ? oilKmType : undefined,
-        packageType,
-        stockQuantity,
-        minStockAlert,
-        costPrice,
-        sellingPrice,
-        unit,
-        barcode: barcode.trim() || undefined,
-      });
-
-      alert('تمت إضافة الصنف الجديد إلى المخزن بنجاح!');
+      if (itemToEdit) {
+        await updateItem({
+          ...itemToEdit,
+          name: name.trim(),
+          brand: brand.trim(),
+          category,
+          viscosity: category === 'oil' ? viscosity : undefined,
+          oilKmType: category === 'oil' ? oilKmType : undefined,
+          packageType,
+          stockQuantity: Number(stockQuantity) || 0,
+          minStockAlert: Number(minStockAlert) || 0,
+          costPrice: Number(costPrice) || 0,
+          sellingPrice: Number(sellingPrice) || 0,
+          unit,
+          barcode: barcode.trim() || undefined,
+        });
+        alert('تم تعديل بيانات ورصيد الصنف بالمخزن مباشرة بنجاح!');
+      } else {
+        await addNewItem({
+          name: name.trim(),
+          brand: brand.trim(),
+          category,
+          viscosity: category === 'oil' ? viscosity : undefined,
+          oilKmType: category === 'oil' ? oilKmType : undefined,
+          packageType,
+          stockQuantity: Number(stockQuantity) || 0,
+          minStockAlert: Number(minStockAlert) || 0,
+          costPrice: Number(costPrice) || 0,
+          sellingPrice: Number(sellingPrice) || 0,
+          unit,
+          barcode: barcode.trim() || undefined,
+        });
+        alert('تمت إضافة الصنف الجديد إلى المخزن بنجاح!');
+      }
       onClose();
     } catch (err) {
       console.error(err);
-      alert('حدث خطأ أثناء إضافة الصنف.');
+      alert('حدث خطأ أثناء حفظ الصنف.');
     } finally {
       setIsSubmitting(false);
     }
@@ -183,11 +235,17 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) =
         <div className="bg-slate-900 px-6 py-4 flex items-center justify-between text-white">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-sky-500/20 text-sky-400 rounded-xl">
-              <PackagePlus className="w-5 h-5" />
+              {itemToEdit ? <Edit2 className="w-5 h-5" /> : <PackagePlus className="w-5 h-5" />}
             </div>
             <div>
-              <h3 className="font-extrabold text-base">إضافة صنف جديد إلى المخزن</h3>
-              <p className="text-xs text-slate-400">تسجيل نوع زيت جديد، فلاتر، سوائل أو مستلزمات</p>
+              <h3 className="font-extrabold text-base">
+                {itemToEdit ? 'تعديل بيانات ورصيد الصنف بالمخزن' : 'إضافة صنف جديد إلى المخزن'}
+              </h3>
+              <p className="text-xs text-slate-400">
+                {itemToEdit
+                  ? 'تعديل مباشر للكمية والأسعار والمواصفات بدون تسوية أو خصم'
+                  : 'تسجيل نوع زيت جديد، فلاتر، سوائل أو مستلزمات'}
+              </p>
             </div>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg">
@@ -505,9 +563,13 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose }) =
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-md shadow-sky-600/20 active:scale-95 transition-all cursor-pointer"
+                className="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-md shadow-sky-600/20 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
               >
-                {isSubmitting ? 'جاري الحفظ...' : 'حفظ الصنف في المخزن'}
+                {isSubmitting
+                  ? 'جاري الحفظ...'
+                  : itemToEdit
+                  ? 'حفظ التعديلات المباشرة 💾'
+                  : 'حفظ الصنف في المخزن'}
               </button>
             </div>
           </div>

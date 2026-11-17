@@ -527,12 +527,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const updated = inventory.map((i) => (i.id === item.id ? item : i));
     setInventory(updated);
     await storage.saveInventory(updated);
+    notify.success(`تم حفظ وتحديث بيانات صنف "${item.name}" ورصيده مباشرة بنجاح!`, 'تعديل الصنف');
   };
 
   const deleteItem = async (itemId: string): Promise<void> => {
+    const target = inventory.find((i) => i.id === itemId);
     const updated = inventory.filter((i) => i.id !== itemId);
     setInventory(updated);
     await storage.saveInventory(updated);
+    notify.info(`تم حذف صنف "${target?.name || ''}" تماماً من المخزن.`, 'حذف الصنف');
   };
 
   // --- Services Actions ---
