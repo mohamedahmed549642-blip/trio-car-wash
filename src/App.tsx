@@ -58,6 +58,7 @@ const MainAppContent: React.FC = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenNewOrder={() => setIsNewOrderOpen(true)}
+        onOpenMasarTech={() => setIsMasarModalOpen(true)}
       />
 
       {/* Main Content Area */}

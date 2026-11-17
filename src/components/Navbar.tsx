@@ -31,9 +31,10 @@ interface NavbarProps {
   activeTab: TabType;
   setActiveTab: (tab: TabType) => void;
   onOpenNewOrder: () => void;
+  onOpenMasarTech?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenNewOrder }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenNewOrder, onOpenMasarTech }) => {
   const {
     lowStockItems,
     currentShift,
@@ -533,6 +534,32 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenN
                 </button>
               </div>
             )}
+
+            {/* Masar Tech Developer Showcase Launcher (Mobile) */}
+            <div className="pt-2 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  if (onOpenMasarTech) onOpenMasarTech();
+                }}
+                className="w-full flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-slate-800 hover:border-sky-500/50 transition-all cursor-pointer group text-right"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-slate-950 p-1.5 border border-slate-800 flex items-center justify-center shrink-0">
+                    <img src="/masar-tech-logo.svg" alt="Masar Tech" className="w-full h-full object-contain" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-black text-white flex items-center gap-1.5">
+                      <span>MASAR TECH</span>
+                      <span className="text-[10px] text-sky-400 font-bold">• مسار تك</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400">تصميم وتطوير النظام وحلول البرمجيات</div>
+                  </div>
+                </div>
+                <ChevronLeft className="w-4 h-4 text-slate-500 group-hover:text-sky-400 transition-colors" />
+              </button>
+            </div>
 
             {/* Logout button */}
             <div className="pt-2 border-t border-slate-800">
