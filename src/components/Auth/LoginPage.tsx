@@ -26,7 +26,8 @@ export const LoginPage: React.FC = () => {
   const usernameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (usernameInputRef.current) {
+    // Only auto-focus on desktop screens to prevent mobile virtual keyboard from popping up and hiding the UI
+    if (window.innerWidth >= 768 && usernameInputRef.current) {
       usernameInputRef.current.focus();
     }
   }, []);
@@ -67,7 +68,7 @@ export const LoginPage: React.FC = () => {
   const workerPass = workerUser?.password || workerUser?.pinCode || '123';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 flex flex-col justify-center items-center p-4 sm:p-6 text-slate-100 font-sans antialiased relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 flex flex-col justify-start sm:justify-center items-center p-4 sm:p-6 py-8 sm:py-12 text-slate-100 font-sans antialiased relative overflow-y-auto">
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -128,7 +129,6 @@ export const LoginPage: React.FC = () => {
                   ref={usernameInputRef}
                   type="text"
                   required
-                  autoFocus
                   name="auth_username"
                   autoComplete="off"
                   placeholder="مثال: owner أو cashier"

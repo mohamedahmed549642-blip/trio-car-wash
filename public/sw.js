@@ -1,5 +1,5 @@
 // Trio Car Wash - Offline Service Worker (PWA)
-const CACHE_NAME = 'trio-car-wash-v7';
+const CACHE_NAME = 'trio-car-wash-v8';
 
 // Core assets to pre-cache on install
 const APP_SHELL = [
@@ -112,16 +112,6 @@ self.addEventListener('fetch', (event) => {
       // B. If not found by full URL, try by pathname
       if (!cached) {
         cached = await cache.match(url.pathname);
-      }
-
-      // C. If script or style requested and not matched, look for cached asset with same extension
-      if (!cached && (url.pathname.endsWith('.js') || url.pathname.endsWith('.css'))) {
-        const keys = await cache.keys();
-        const ext = url.pathname.endsWith('.js') ? '.js' : '.css';
-        const fallbackKey = keys.find((k) => new URL(k.url).pathname.endsWith(ext));
-        if (fallbackKey) {
-          cached = await cache.match(fallbackKey);
-        }
       }
 
       if (cached) {

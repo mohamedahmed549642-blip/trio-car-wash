@@ -32,6 +32,9 @@ function injectServiceWorkerAssets(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: true, // Listen on all network addresses (allows access from mobile phones on same Wi-Fi)
+  },
   plugins: [
     react(),
     tailwindcss(),

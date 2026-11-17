@@ -37,15 +37,6 @@ export const WorkersManager: React.FC = () => {
     activeUser.role === 'developer' ||
     activeUser.username === 'developer';
 
-  // Filter users: Developer account is strictly visible ONLY to the developer himself
-  const visibleUsers = users.filter((u) => {
-    const isUserDev = u.role === 'developer' || u.username === 'developer';
-    if (isUserDev) {
-      return isDev;
-    }
-    return true;
-  });
-
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
 
@@ -79,18 +70,16 @@ export const WorkersManager: React.FC = () => {
   };
 
   const openEditModal = (user: UserProfile) => {
-    const isTargetDev = user.role === 'developer' || user.username === 'developer';
-    if (isTargetDev && !isDev) {
-      alert('لا يمكن تعديل أو رؤية حساب مطور النظام إلا بواسطة المطور نفسه.');
+    if ((user.role === 'developer' || user.username === 'developer' || user.id === 'user_developer') && !isDev) {
+      alert('بيانات وصلاحيات مطور النظام محمية ولا يمكن تعديلها إلا من خلال حساب المطور.');
       return;
     }
-
     setEditingUser(user);
     setName(user.name);
-    setUsername(user.username || (user.role === 'admin' ? 'owner' : 'worker'));
+    setUsername(user.username || (user.role === 'admin' ? 'owner' : user.role === 'developer' ? 'developer' : 'worker'));
     setPassword(user.password || user.pinCode || '123');
     setRole(user.role);
-    setJobTitle(user.jobTitle || 'عامل / فني');
+    setJobTitle(user.jobTitle || (user.role === 'admin' ? 'المدير العام' : user.role === 'developer' ? 'مطور ومهندس النظام التقني' : 'عامل / فني'));
     setPhone(user.phone || '');
     setDailyWage(user.dailyWage || 0);
     setIsAddModalOpen(true);
@@ -110,9 +99,8 @@ export const WorkersManager: React.FC = () => {
       alert('يرجى إدخال كلمة المرور للدخول.');
       return;
     }
-
     if (role === 'developer' && !isDev) {
-      alert('غير مصرح لك بتعيين صلاحية مطور النظام.');
+      alert('صلاحية مطور النظام مخصصة للمطور التقني فقط.');
       return;
     }
 
@@ -172,9 +160,11 @@ export const WorkersManager: React.FC = () => {
       alert('لا يمكنك حذف الحساب النشط حالياً!');
       return;
     }
-    if (user.role === 'developer' || user.username === 'developer') {
-      alert('لا يمكن حذف حساب مطور النظام!');
-      return;
+    if (user.role === 'developer' || user.username === 'developer' || user.id === 'user_developer') {
+      if (!isDev) {
+        alert('لا يمكن حذف حساب مطور النظام!');
+        return;
+      }
     }
     if (user.role === 'admin' && users.filter((u) => u.role === 'admin').length <= 1) {
       alert('لا يمكن حذف المالك الأساسي للنظام!');
@@ -205,8 +195,16 @@ export const WorkersManager: React.FC = () => {
     );
   }
 
+  const visibleUsers = users.filter((u) => {
+    if (isDev) return true;
+    return u.role !== 'developer' && u.username !== 'developer' && u.id !== 'user_developer';
+  });
+
   const workersCount = visibleUsers.filter((u) => u.role === 'cashier').length;
   const ownersCount = visibleUsers.filter((u) => u.role === 'admin').length;
+  const developersCount = isDev
+    ? visibleUsers.filter((u) => u.role === 'developer' || u.username === 'developer').length
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -234,8 +232,30 @@ export const WorkersManager: React.FC = () => {
         </button>
       </div>
 
+      {/* Developer Active Banner */}
+      {isDev && (
+        <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-2xl p-4 text-white shadow-md border border-purple-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-purple-500/20 text-purple-300 rounded-xl border border-purple-500/30 shrink-0">
+              <Code2 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-black text-sm">وضع المطور نشط في إدارة العمال 🛠️</span>
+                <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold">
+                  Developer Mode
+                </span>
+              </div>
+              <p className="text-xs text-purple-200 mt-0.5">
+                حسابات وأذونات مطور النظام التقني تظهر لك فقط ومحمية من الظهور لصاحب المغسلة أو الكاشير.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 sm:grid-cols-3 ${isDev ? 'lg:grid-cols-4' : ''} gap-4`}>
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-slate-500 block mb-1">إجمالي فريق العمل</span>
@@ -271,6 +291,20 @@ export const WorkersManager: React.FC = () => {
             <Shield className="w-6 h-6" />
           </div>
         </div>
+
+        {isDev && (
+          <div className="bg-white p-5 rounded-2xl shadow-sm border border-cyan-200 flex items-center justify-between">
+            <div>
+              <span className="text-xs font-bold text-cyan-800 block mb-1">مطور النظام (تقني)</span>
+              <div className="text-2xl font-black text-cyan-700 font-mono">
+                {developersCount} <span className="text-xs text-slate-400">حساب مطور</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
+              <Code2 className="w-6 h-6" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Workers Cards & Table */}
@@ -291,12 +325,13 @@ export const WorkersManager: React.FC = () => {
                 <th className="py-3 px-4">رقم الهاتف</th>
                 <th className="py-3 px-4 text-center">كلمة المرور</th>
                 <th className="py-3 px-4 text-left">اليومية المقدرة</th>
-                <th className="py-3 px-4 text-center">إجراءات المالك</th>
+                <th className="py-3 px-4 text-center">{isDev ? 'إجراءات الإدارة والمطور' : 'إجراءات المالك'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {users.map((u) => {
+              {visibleUsers.map((u) => {
                 const isOwner = u.role === 'admin';
+                const isDeveloperUser = u.role === 'developer' || u.username === 'developer' || u.id === 'user_developer';
                 const isCurrent = u.id === activeUser.id;
                 const showPin = visiblePins[u.id];
 
@@ -397,11 +432,21 @@ export const WorkersManager: React.FC = () => {
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
 
-                        {!isOwner && (
+                        {!isOwner && !isDeveloperUser && (
                           <button
                             onClick={() => handleDelete(u)}
                             className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer"
                             title="حذف العامل"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+
+                        {isDev && isDeveloperUser && u.id !== 'user_developer' && (
+                          <button
+                            onClick={() => handleDelete(u)}
+                            className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors cursor-pointer"
+                            title="حذف حساب المطور الإضافي"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -469,7 +514,9 @@ export const WorkersManager: React.FC = () => {
                   >
                     <option value="cashier">عامل / كاشير (تشغيلي بدون أرباح)</option>
                     <option value="admin">مالك / شريك (صلاحيات كاملة وأرباح)</option>
-                    <option value="developer">مطور نظام (صلاحيات كاملة وشاملة ومفتوحة)</option>
+                    {isDev && (
+                      <option value="developer">مطور نظام (صلاحيات كاملة وشاملة ومفتوحة) 💻</option>
+                    )}
                   </select>
                 </div>
 
